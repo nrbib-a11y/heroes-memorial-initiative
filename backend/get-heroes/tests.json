@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Get all heroes",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "0": {
+          "id": "number",
+          "name": "string",
+          "birthYear": "number"
+        }
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Search heroes by name",
+      "method": "GET",
+      "path": "/?search=Донцов",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}
