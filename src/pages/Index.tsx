@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
+import MemoryMap from '@/components/MemoryMap';
+import UploadForm from '@/components/UploadForm';
 
 interface Hero {
   id: number;
@@ -66,6 +69,7 @@ const mockHeroes: Hero[] = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRank, setFilterRank] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
@@ -215,8 +219,9 @@ const Index = () => {
               {filteredHeroes.map((hero, index) => (
                 <Card
                   key={hero.id}
-                  className="p-6 bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/50 transition-all hover:shadow-lg animate-fade-in group"
+                  className="p-6 bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/50 transition-all hover:shadow-lg animate-fade-in group cursor-pointer"
                   style={{ animationDelay: `${index * 0.05}s` }}
+                  onClick={() => navigate(`/hero/${hero.id}`)}
                 >
                   <div className="flex gap-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl font-bold text-primary-foreground flex-shrink-0">
@@ -312,6 +317,10 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <MemoryMap />
+
+      <UploadForm />
 
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4">
