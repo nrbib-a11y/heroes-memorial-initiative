@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
-import MemoryMap from '@/components/MemoryMap';
 import UploadForm from '@/components/UploadForm';
 
 interface Hero {
@@ -25,46 +24,46 @@ interface Hero {
 const mockHeroes: Hero[] = [
   {
     id: 1,
-    name: 'Иванов Петр Сергеевич',
-    birthYear: 1920,
+    name: 'Голубев Петр Иванович',
+    birthYear: 1919,
     deathYear: 1943,
     rank: 'Сержант',
-    unit: '5-я гвардейская танковая армия',
+    unit: '51-я армия',
     awards: ['Орден Красной Звезды', 'Медаль "За отвагу"'],
-    hometown: 'с. Красное',
-    region: 'Курская область',
+    hometown: 'с. Покровское',
+    region: 'Неклиновский район',
   },
   {
     id: 2,
-    name: 'Смирнов Александр Иванович',
-    birthYear: 1918,
-    deathYear: 1945,
-    rank: 'Лейтенант',
-    unit: '150-я стрелковая дивизия',
-    awards: ['Орден Отечественной войны II степени', 'Медаль "За взятие Берлина"'],
-    hometown: 'г. Тула',
-    region: 'Тульская область',
+    name: 'Кузнецов Иван Семенович',
+    birthYear: 1921,
+    deathYear: 1944,
+    rank: 'Рядовой',
+    unit: '130-я стрелковая дивизия',
+    awards: ['Медаль "За отвагу"', 'Медаль "За боевые заслуги"'],
+    hometown: 'с. Неклиновское',
+    region: 'Неклиновский район',
   },
   {
     id: 3,
-    name: 'Кузнецов Николай Федорович',
-    birthYear: 1922,
-    rank: 'Рядовой',
-    unit: '3-я ударная армия',
-    awards: ['Медаль "За боевые заслуги"'],
-    hometown: 'д. Березовка',
-    region: 'Смоленская область',
+    name: 'Волков Анатолий Андреевич',
+    birthYear: 1923,
+    rank: 'Лейтенант',
+    unit: '296-я стрелковая дивизия',
+    awards: ['Орден Отечественной войны II степени'],
+    hometown: 'с. Веселое',
+    region: 'Неклиновский район',
   },
   {
     id: 4,
-    name: 'Попов Василий Михайлович',
-    birthYear: 1915,
-    deathYear: 1942,
+    name: 'Беляев Николай Григорьевич',
+    birthYear: 1917,
+    deathYear: 1945,
     rank: 'Старшина',
-    unit: '62-я армия',
-    awards: ['Орден Красного Знамени', 'Орден Славы III степени'],
-    hometown: 'г. Сталинград',
-    region: 'Сталинградская область',
+    unit: '230-я стрелковая дивизия',
+    awards: ['Орден Красного Знамени', 'Медаль "За взятие Берлина"'],
+    hometown: 'с. Рождественка',
+    region: 'Неклиновский район',
   },
 ];
 
@@ -86,10 +85,10 @@ const Index = () => {
   });
 
   const stats = {
-    total: 1245678,
-    found: 856234,
-    missing: 389444,
-    regions: 85,
+    total: 4821,
+    found: 2156,
+    missing: 2665,
+    districts: 58,
   };
 
   return (
@@ -102,13 +101,13 @@ const Index = () => {
                 <Icon name="Star" className="text-primary-foreground" size={24} />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-primary">Память Народа</h1>
-                <p className="text-sm text-muted-foreground">Герои Великой Отечественной войны</p>
+                <h1 className="text-3xl font-bold text-primary">Память Дона</h1>
+                <p className="text-sm text-muted-foreground">Герои Неклиновского района</p>
               </div>
             </div>
             <nav className="hidden md:flex gap-6">
               <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
-              <a href="#map" className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</a>
+              <a href="#upload" className="text-sm font-medium hover:text-primary transition-colors">Загрузить материалы</a>
               <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
             </nav>
           </div>
@@ -127,7 +126,7 @@ const Index = () => {
               Вечная память героям
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Проект по увековечению памяти защитников Отечества в каждом населенном пункте России
+              Проект по увековечению памяти защитников Отечества в каждом населенном пункте Неклиновского района Ростовской области
             </p>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
@@ -135,7 +134,7 @@ const Index = () => {
                 { label: 'Всего записей', value: stats.total.toLocaleString('ru-RU'), icon: 'Users' },
                 { label: 'Установлены', value: stats.found.toLocaleString('ru-RU'), icon: 'CheckCircle2' },
                 { label: 'Ищем', value: stats.missing.toLocaleString('ru-RU'), icon: 'Search' },
-                { label: 'Регионов', value: stats.regions, icon: 'Map' },
+                { label: 'Населенных пунктов', value: stats.districts, icon: 'Map' },
               ].map((stat, i) => (
                 <Card key={i} className="p-6 bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all animate-scale-in hover:scale-105" style={{ animationDelay: `${i * 0.1}s` }}>
                   <Icon name={stat.icon as any} className="text-secondary mx-auto mb-2" size={32} />
@@ -187,11 +186,11 @@ const Index = () => {
                   onChange={(e) => setFilterRegion(e.target.value)}
                   className="px-4 py-2 bg-background border border-primary/30 rounded-md text-sm focus:outline-none focus:border-primary"
                 >
-                  <option value="">Все регионы</option>
-                  <option value="Курская область">Курская область</option>
-                  <option value="Тульская область">Тульская область</option>
-                  <option value="Смоленская область">Смоленская область</option>
-                  <option value="Сталинградская область">Сталинградская область</option>
+                  <option value="">Все населенные пункты</option>
+                  <option value="Неклиновский район">с. Неклиновское</option>
+                  <option value="Неклиновский район">с. Покровское</option>
+                  <option value="Неклиновский район">с. Веселое</option>
+                  <option value="Неклиновский район">с. Рождественка</option>
                 </select>
               </div>
               
@@ -297,15 +296,16 @@ const Index = () => {
             <Icon name="Heart" className="text-primary mx-auto" size={48} />
             <h3 className="text-4xl font-bold text-primary">О проекте</h3>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Наша миссия — увековечить память о каждом защитнике Отечества, ушедшем на фронт в годы 
-              Великой Отечественной войны. Мы работаем над тем, чтобы имена и судьбы героев стали 
-              известны их землякам и потомкам. Каждое имя — это история, каждая история — это подвиг.
+              Наша миссия — увековечить память о каждом защитнике Отечества Неклиновского района, 
+              ушедшем на фронт в годы Великой Отечественной войны. Мы работаем над тем, чтобы имена 
+              и судьбы героев нашего района стали известны их землякам и потомкам. Каждое имя — это история, 
+              каждая история — это подвиг.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mt-12">
               {[
-                { icon: 'BookOpen', title: 'Архивная работа', desc: 'Изучаем документы военных лет' },
-                { icon: 'Users', title: 'Народная память', desc: 'Собираем воспоминания и свидетельства' },
-                { icon: 'Globe', title: 'Доступность', desc: 'Открытая база для всех регионов России' },
+                { icon: 'BookOpen', title: 'Архивная работа', desc: 'Изучаем документы военных лет Неклиновского района' },
+                { icon: 'Users', title: 'Народная память', desc: 'Собираем воспоминания жителей нашего района' },
+                { icon: 'MapPin', title: 'Местная история', desc: 'Герои 58 населенных пунктов района' },
               ].map((item, i) => (
                 <Card key={i} className="p-6 bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all hover:scale-105 animate-scale-in" style={{ animationDelay: `${i * 0.1}s` }}>
                   <Icon name={item.icon as any} className="text-secondary mx-auto mb-4" size={40} />
@@ -318,8 +318,6 @@ const Index = () => {
         </div>
       </section>
 
-      <MemoryMap />
-
       <UploadForm />
 
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
@@ -327,10 +325,10 @@ const Index = () => {
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center gap-2">
               <Icon name="Star" className="text-primary" size={20} />
-              <span className="font-bold text-primary">Память Народа</span>
+              <span className="font-bold text-primary">Память Дона</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Проект по сохранению памяти о героях Великой Отечественной войны
+              Проект по сохранению памяти о героях Неклиновского района
             </p>
             <div className="flex justify-center gap-6 text-sm">
               <a href="#" className="text-primary hover:underline">Контакты</a>
@@ -338,7 +336,7 @@ const Index = () => {
               <a href="#" className="text-primary hover:underline">Документы</a>
             </div>
             <p className="text-xs text-muted-foreground pt-4">
-              © 2024 Память Народа. Все герои достойны памяти.
+              © 2024 Память Дона. Все герои достойны памяти.
             </p>
           </div>
         </div>
