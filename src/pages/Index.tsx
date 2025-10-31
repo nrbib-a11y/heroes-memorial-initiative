@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import MemoryMap from '@/components/MemoryMap';
 import UploadForm from '@/components/UploadForm';
+import HeroCard from '@/components/HeroCard';
 
 interface Hero {
   id: number;
@@ -25,46 +26,46 @@ interface Hero {
 const mockHeroes: Hero[] = [
   {
     id: 1,
-    name: 'Иванов Петр Сергеевич',
+    name: 'Голубев Петр Иванович',
     birthYear: 1920,
     deathYear: 1943,
     rank: 'Сержант',
     unit: '5-я гвардейская танковая армия',
     awards: ['Орден Красной Звезды', 'Медаль "За отвагу"'],
-    hometown: 'с. Красное',
-    region: 'Курская область',
+    hometown: 'с. Покровское',
+    region: 'Неклиновский район',
   },
   {
     id: 2,
-    name: 'Смирнов Александр Иванович',
+    name: 'Кузнецов Иван Степанович',
     birthYear: 1918,
     deathYear: 1945,
     rank: 'Лейтенант',
     unit: '150-я стрелковая дивизия',
     awards: ['Орден Отечественной войны II степени', 'Медаль "За взятие Берлина"'],
-    hometown: 'г. Тула',
-    region: 'Тульская область',
+    hometown: 'с. Неклиновское',
+    region: 'Неклиновский район',
   },
   {
     id: 3,
-    name: 'Кузнецов Николай Федорович',
+    name: 'Волков Алексей Александрович',
     birthYear: 1922,
     rank: 'Рядовой',
     unit: '3-я ударная армия',
     awards: ['Медаль "За боевые заслуги"'],
-    hometown: 'д. Березовка',
-    region: 'Смоленская область',
+    hometown: 'с. Веселое',
+    region: 'Неклиновский район',
   },
   {
     id: 4,
-    name: 'Попов Василий Михайлович',
+    name: 'Беляев Николай Григорьевич',
     birthYear: 1915,
     deathYear: 1942,
     rank: 'Старшина',
     unit: '62-я армия',
     awards: ['Орден Красного Знамени', 'Орден Славы III степени'],
-    hometown: 'г. Сталинград',
-    region: 'Сталинградская область',
+    hometown: 'с. Рождественка',
+    region: 'Неклиновский район',
   },
 ];
 
@@ -73,8 +74,17 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRank, setFilterRank] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
+  const [heroes, setHeroes] = useState<Hero[]>(mockHeroes);
 
-  const filteredHeroes = mockHeroes.filter((hero) => {
+  const handleUpdateHero = (updatedHero: Hero) => {
+    setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
+  };
+
+  const handleDeleteHero = (id: number) => {
+    setHeroes(heroes.filter(h => h.id !== id));
+  };
+
+  const filteredHeroes = heroes.filter((hero) => {
     const matchesSearch = hero.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       hero.unit.toLowerCase().includes(searchQuery.toLowerCase()) ||
       hero.hometown.toLowerCase().includes(searchQuery.toLowerCase());
@@ -86,10 +96,10 @@ const Index = () => {
   });
 
   const stats = {
-    total: 1245678,
-    found: 856234,
-    missing: 389444,
-    regions: 85,
+    total: 4821,
+    found: 3245,
+    missing: 1576,
+    regions: 58,
   };
 
   return (
@@ -102,8 +112,8 @@ const Index = () => {
                 <Icon name="Star" className="text-primary-foreground" size={24} />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-primary">Память Народа</h1>
-                <p className="text-sm text-muted-foreground">Герои Великой Отечественной войны</p>
+                <h1 className="text-3xl font-bold text-primary">Герои Неклиновского района</h1>
+                <p className="text-sm text-muted-foreground">Память о защитниках Отечества</p>
               </div>
             </div>
             <nav className="hidden md:flex gap-6">
@@ -124,10 +134,10 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in-up">
             <h2 className="text-5xl md:text-6xl font-bold text-primary leading-tight">
-              Вечная память героям
+              Вечная память героям Неклиновского района
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Проект по увековечению памяти защитников Отечества в каждом населенном пункте России
+              Мемориализация защитников Отечества Ростовской области, Неклиновского района, ушедших на фронт в годы Великой Отечественной войны
             </p>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
@@ -135,7 +145,7 @@ const Index = () => {
                 { label: 'Всего записей', value: stats.total.toLocaleString('ru-RU'), icon: 'Users' },
                 { label: 'Установлены', value: stats.found.toLocaleString('ru-RU'), icon: 'CheckCircle2' },
                 { label: 'Ищем', value: stats.missing.toLocaleString('ru-RU'), icon: 'Search' },
-                { label: 'Регионов', value: stats.regions, icon: 'Map' },
+                { label: 'Населенных пунктов', value: stats.regions, icon: 'Map' },
               ].map((stat, i) => (
                 <Card key={i} className="p-6 bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all animate-scale-in hover:scale-105" style={{ animationDelay: `${i * 0.1}s` }}>
                   <Icon name={stat.icon as any} className="text-secondary mx-auto mb-2" size={32} />
@@ -187,11 +197,12 @@ const Index = () => {
                   onChange={(e) => setFilterRegion(e.target.value)}
                   className="px-4 py-2 bg-background border border-primary/30 rounded-md text-sm focus:outline-none focus:border-primary"
                 >
-                  <option value="">Все регионы</option>
-                  <option value="Курская область">Курская область</option>
-                  <option value="Тульская область">Тульская область</option>
-                  <option value="Смоленская область">Смоленская область</option>
-                  <option value="Сталинградская область">Сталинградская область</option>
+                  <option value="">Все населенные пункты</option>
+                  <option value="Неклиновский район">Неклиновский район</option>
+                  <option value="с. Покровское">с. Покровское</option>
+                  <option value="с. Неклиновское">с. Неклиновское</option>
+                  <option value="с. Веселое">с. Веселое</option>
+                  <option value="с. Рождественка">с. Рождественка</option>
                 </select>
               </div>
               
@@ -217,74 +228,17 @@ const Index = () => {
 
             <div className="grid md:grid-cols-2 gap-6">
               {filteredHeroes.map((hero, index) => (
-                <Card
+                <div
                   key={hero.id}
-                  className="p-6 bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/50 transition-all hover:shadow-lg animate-fade-in group cursor-pointer"
+                  className="animate-fade-in"
                   style={{ animationDelay: `${index * 0.05}s` }}
-                  onClick={() => navigate(`/hero/${hero.id}`)}
                 >
-                  <div className="flex gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl font-bold text-primary-foreground flex-shrink-0">
-                      {hero.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xl font-bold text-primary mb-1 group-hover:text-primary/80 transition-colors">
-                        {hero.name}
-                      </h4>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                        <span>{hero.birthYear}</span>
-                        {hero.deathYear && (
-                          <>
-                            <span>—</span>
-                            <span>{hero.deathYear}</span>
-                            <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary border-primary/20">
-                              Погиб
-                            </Badge>
-                          </>
-                        )}
-                      </div>
-                      
-                      <Tabs defaultValue="info" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 bg-muted/50">
-                          <TabsTrigger value="info" className="text-xs">Информация</TabsTrigger>
-                          <TabsTrigger value="awards" className="text-xs">Награды</TabsTrigger>
-                          <TabsTrigger value="location" className="text-xs">Место призыва</TabsTrigger>
-                        </TabsList>
-                        
-                        <TabsContent value="info" className="mt-4 space-y-2">
-                          <div className="flex items-start gap-2 text-sm">
-                            <Icon name="Shield" className="text-primary mt-0.5 flex-shrink-0" size={16} />
-                            <div>
-                              <div className="font-medium text-foreground">{hero.rank}</div>
-                              <div className="text-muted-foreground">{hero.unit}</div>
-                            </div>
-                          </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="awards" className="mt-4">
-                          <div className="flex flex-wrap gap-2">
-                            {hero.awards.map((award, i) => (
-                              <Badge key={i} variant="outline" className="border-secondary text-secondary-foreground bg-secondary/5">
-                                <Icon name="Medal" size={14} className="mr-1" />
-                                {award}
-                              </Badge>
-                            ))}
-                          </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="location" className="mt-4 space-y-2">
-                          <div className="flex items-start gap-2 text-sm">
-                            <Icon name="MapPin" className="text-primary mt-0.5 flex-shrink-0" size={16} />
-                            <div>
-                              <div className="font-medium text-foreground">{hero.hometown}</div>
-                              <div className="text-muted-foreground">{hero.region}</div>
-                            </div>
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </div>
-                </Card>
+                  <HeroCard
+                    hero={hero}
+                    onUpdate={handleUpdateHero}
+                    onDelete={handleDeleteHero}
+                  />
+                </div>
               ))}
             </div>
           </div>
