@@ -9,6 +9,7 @@ import Icon from '@/components/ui/icon';
 import MemoryMap from '@/components/MemoryMap';
 import UploadForm from '@/components/UploadForm';
 import HeroCard from '@/components/HeroCard';
+import AddHeroForm from '@/components/AddHeroForm';
 
 interface Hero {
   id: number;
@@ -75,6 +76,7 @@ const Index = () => {
   const [filterRank, setFilterRank] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
   const [heroes, setHeroes] = useState<Hero[]>(mockHeroes);
+  const [isAddingHero, setIsAddingHero] = useState(false);
 
   const handleUpdateHero = (updatedHero: Hero) => {
     setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
@@ -82,6 +84,11 @@ const Index = () => {
 
   const handleDeleteHero = (id: number) => {
     setHeroes(heroes.filter(h => h.id !== id));
+  };
+
+  const handleAddHero = (newHero: Hero) => {
+    setHeroes([newHero, ...heroes]);
+    setIsAddingHero(false);
   };
 
   const filteredHeroes = heroes.filter((hero) => {
@@ -161,11 +168,25 @@ const Index = () => {
       <section id="database" className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12 animate-fade-in">
-              <h3 className="text-4xl font-bold text-primary mb-4">База данных героев</h3>
-              <p className="text-lg text-muted-foreground">
-                Поиск по ФИО, годам службы, воинским частям, наградам и месту призыва
-              </p>
+            <div className="mb-12 animate-fade-in">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-4xl font-bold text-primary mb-2">База данных героев</h3>
+                  <p className="text-lg text-muted-foreground">
+                    Поиск по ФИО, годам службы, воинским частям, наградам и месту призыва
+                  </p>
+                </div>
+                {!isAddingHero && (
+                  <Button
+                    onClick={() => setIsAddingHero(true)}
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    <Icon name="Plus" size={20} className="mr-2" />
+                    Добавить героя
+                  </Button>
+                )}
+              </div>
             </div>
 
             <Card className="p-6 mb-8 bg-card/90 backdrop-blur-sm border-primary/20 animate-scale-in">
@@ -225,6 +246,15 @@ const Index = () => {
                 </div>
               )}
             </Card>
+
+            {isAddingHero && (
+              <div className="mb-8 animate-scale-in">
+                <AddHeroForm
+                  onAdd={handleAddHero}
+                  onCancel={() => setIsAddingHero(false)}
+                />
+              </div>
+            )}
 
             <div className="grid md:grid-cols-2 gap-6">
               {filteredHeroes.map((hero, index) => (
