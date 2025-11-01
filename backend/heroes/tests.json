@@ -1,0 +1,34 @@
+{
+  "tests": [
+    {
+      "name": "Get all heroes",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "heroes": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create new hero",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "name": "Тестов Тест Тестович",
+        "birthYear": 1920,
+        "deathYear": 1943,
+        "rank": "Сержант",
+        "unit": "Тестовая часть",
+        "hometown": "с. Тестовое",
+        "region": "Неклиновский район"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "id": "number",
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

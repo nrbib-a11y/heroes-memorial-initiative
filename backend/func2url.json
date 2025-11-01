@@ -1,4 +1,5 @@
 {
+  "heroes": "https://functions.poehali.dev/1c7b2c09-4c55-4269-9476-1a0477fdfc6d",
   "get-heroes": "https://functions.poehali.dev/754ff53d-700c-498b-aaf8-76b53f28f4e5",
   "submit-materials": "https://functions.poehali.dev/82f9aec1-b885-42e5-bc4d-86479f13423b",
   "get-hero-detail": "https://functions.poehali.dev/47282d91-1195-4339-88c9-ea5c12894b5f"
