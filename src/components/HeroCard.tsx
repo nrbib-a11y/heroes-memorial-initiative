@@ -33,6 +33,8 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
   const [editedHero, setEditedHero] = useState<Hero>(hero);
   const [heroPhoto, setHeroPhoto] = useState<string | null>(null);
   const [loadingPhoto, setLoadingPhoto] = useState(false);
+  const [heroDocuments, setHeroDocuments] = useState<any[]>([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
 
   const handleSave = () => {
     onUpdate(editedHero);
@@ -49,9 +51,10 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
     setEditedHero({ ...editedHero, awards: awardsArray });
   };
 
-  const loadHeroPhoto = async () => {
+  const loadHeroFiles = async () => {
     try {
       setLoadingPhoto(true);
+      setLoadingDocs(true);
       const response = await fetch(
         `https://functions.poehali.dev/5b374262-df50-4d0c-a58d-7670e30be3c1?hero_id=${hero.id}`
       );
@@ -60,15 +63,18 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
       if (photo?.file_data) {
         setHeroPhoto(photo.file_data);
       }
+      const documents = files.filter((f: any) => f.file_type === 'document');
+      setHeroDocuments(documents);
     } catch (error) {
-      console.error('Failed to load photo:', error);
+      console.error('Failed to load files:', error);
     } finally {
       setLoadingPhoto(false);
+      setLoadingDocs(false);
     }
   };
 
   useEffect(() => {
-    loadHeroPhoto();
+    loadHeroFiles();
   }, [hero.id]);
 
   if (isEditing) {
@@ -172,7 +178,7 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
             <FileUploadSection 
               heroId={hero.id} 
               authToken={authToken}
-              onPhotoUploaded={loadHeroPhoto}
+              onPhotoUploaded={loadHeroFiles}
             />
           )}
         </div>
@@ -242,6 +248,27 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
                   <Icon name="Medal" size={12} className="mr-1" />
                   {award}
                 </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {heroDocuments.length > 0 && (
+          <div>
+            <span className="text-sm font-medium text-muted-foreground mb-2 block">Архивные документы:</span>
+            <div className="space-y-2">
+              {heroDocuments.map((doc) => (
+                <a
+                  key={doc.id}
+                  href={doc.file_data}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors border border-primary/20 hover:border-primary/40"
+                >
+                  <Icon name="FileText" size={16} className="text-primary shrink-0" />
+                  <span className="text-sm truncate flex-1">{doc.file_name}</span>
+                  <Icon name="ExternalLink" size={14} className="text-muted-foreground shrink-0" />
+                </a>
               ))}
             </div>
           </div>
