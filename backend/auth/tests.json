@@ -5,13 +5,13 @@
       "method": "POST",
       "path": "/",
       "body": {
-        "login": "neklinovsky_admin",
+        "login": "neklinovsky5_admin",
         "password": "Heroes2024!"
       },
       "expectedStatus": 200,
       "expectedBody": {
         "token": "string",
-        "login": "neklinovsky5_admin"
+        "login": "neklinovsky_admin"
       },
       "bodyMatcher": "partial"
     },
