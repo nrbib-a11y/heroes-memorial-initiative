@@ -1,29 +1,33 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Icon from '@/components/ui/icon';
-import HeroCard from '@/components/HeroCard';
-import AddHeroForm from '@/components/AddHeroForm';
-import LoginModal from '@/components/LoginModal';
-import HeroDetailModal from '@/components/HeroDetailModal';
-import { heroesAPI, Hero as APIHero } from '@/lib/api';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Icon from "@/components/ui/icon";
+import HeroCard from "@/components/HeroCard";
+import AddHeroForm from "@/components/AddHeroForm";
+import LoginModal from "@/components/LoginModal";
+import HeroDetailModal from "@/components/HeroDetailModal";
+import { heroesAPI, Hero as APIHero } from "@/lib/api";
 
 type Hero = APIHero;
 
 const Index = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterRank, setFilterRank] = useState('');
-  const [filterRegion, setFilterRegion] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterRank, setFilterRank] = useState("");
+  const [filterRegion, setFilterRegion] = useState("");
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [isAddingHero, setIsAddingHero] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
-  const [userLogin, setUserLogin] = useState<string | null>(localStorage.getItem('userLogin'));
+  const [authToken, setAuthToken] = useState<string | null>(
+    localStorage.getItem("authToken"),
+  );
+  const [userLogin, setUserLogin] = useState<string | null>(
+    localStorage.getItem("userLogin"),
+  );
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
   const [showHeroDetail, setShowHeroDetail] = useState(false);
@@ -38,7 +42,7 @@ const Index = () => {
       const data = await heroesAPI.getAll();
       setHeroes(data);
     } catch (error) {
-      console.error('Failed to load heroes:', error);
+      console.error("Failed to load heroes:", error);
     } finally {
       setLoading(false);
     }
@@ -47,46 +51,46 @@ const Index = () => {
   const handleUpdateHero = async (updatedHero: Hero) => {
     try {
       await heroesAPI.update(updatedHero);
-      setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
+      setHeroes(heroes.map((h) => (h.id === updatedHero.id ? updatedHero : h)));
     } catch (error) {
-      console.error('Failed to update hero:', error);
-      alert('Не удалось обновить данные');
+      console.error("Failed to update hero:", error);
+      alert("Не удалось обновить данные");
     }
   };
 
   const handleDeleteHero = async (id: number) => {
     try {
       await heroesAPI.delete(id);
-      setHeroes(heroes.filter(h => h.id !== id));
+      setHeroes(heroes.filter((h) => h.id !== id));
     } catch (error) {
-      console.error('Failed to delete hero:', error);
-      alert('Не удалось удалить героя');
+      console.error("Failed to delete hero:", error);
+      alert("Не удалось удалить героя");
     }
   };
 
-  const handleAddHero = async (newHero: Omit<Hero, 'id'>) => {
+  const handleAddHero = async (newHero: Omit<Hero, "id">) => {
     try {
       await heroesAPI.create(newHero);
       await loadHeroes();
       setIsAddingHero(false);
     } catch (error) {
-      console.error('Failed to add hero:', error);
-      alert('Не удалось добавить героя');
+      console.error("Failed to add hero:", error);
+      alert("Не удалось добавить героя");
     }
   };
 
   const handleLogin = (token: string, login: string) => {
     setAuthToken(token);
     setUserLogin(login);
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userLogin', login);
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("userLogin", login);
   };
 
   const handleLogout = () => {
     setAuthToken(null);
     setUserLogin(null);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userLogin');
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userLogin");
   };
 
   const handleHeroClick = (hero: Hero) => {
@@ -95,20 +99,21 @@ const Index = () => {
   };
 
   const filteredHeroes = heroes.filter((hero) => {
-    const matchesSearch = hero.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      hero.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       hero.unit.toLowerCase().includes(searchQuery.toLowerCase()) ||
       hero.hometown.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesRank = !filterRank || hero.rank === filterRank;
     const matchesRegion = !filterRegion || hero.region === filterRegion;
-    
+
     return matchesSearch && matchesRank && matchesRegion;
   });
 
   const stats = {
     total: heroes.length,
-    found: heroes.filter(h => h.deathYear).length,
-    missing: heroes.filter(h => !h.deathYear).length,
+    found: heroes.filter((h) => h.deathYear).length,
+    missing: heroes.filter((h) => !h.deathYear).length,
     regions: 58,
   };
 
@@ -119,20 +124,43 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                <Icon name="Star" className="text-primary-foreground" size={24} />
+                <Icon
+                  name="Star"
+                  className="text-primary-foreground"
+                  size={24}
+                />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-primary">Герои Неклиновского района</h1>
-                <p className="text-sm text-muted-foreground">Память о защитниках Отечества</p>
+                <h1 className="text-3xl font-bold text-primary">
+                  Герои Неклиновского района
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Память о защитниках Отечества
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-6">
               <nav className="hidden md:flex gap-6">
-                <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
-                <button onClick={() => navigate('/map')} className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</button>
-                <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
+                <a
+                  href="#database"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  База данных
+                </a>
+                <button
+                  onClick={() => navigate("/map")}
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  Карта памяти
+                </button>
+                <a
+                  href="#about"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  О проекте
+                </a>
               </nav>
-              
+
               {authToken ? (
                 <div className="flex items-center gap-3">
                   <Badge variant="outline" className="gap-2">
@@ -170,27 +198,57 @@ const Index = () => {
           <div className="absolute top-10 left-10 w-64 h-64 bg-primary rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-secondary rounded-full blur-3xl"></div>
         </div>
-        
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in-up">
             <h2 className="text-5xl md:text-6xl font-bold text-primary leading-tight">
               Вечная память героям Неклиновского района
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Мемориализация защитников Отечества Неклиновского района, Ростовской области, ушедших на фронт в годы Великой Отечественной войны
+              Мемориализация защитников Отечества Неклиновского района,
+              Ростовской области, ушедших на фронт в годы Великой Отечественной
+              войны
             </p>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
               {[
-                { label: 'Всего записей', value: stats.total.toLocaleString('ru-RU'), icon: 'Users' },
-                { label: 'Установлены', value: stats.found.toLocaleString('ru-RU'), icon: 'CheckCircle2' },
-                { label: 'Ищем', value: stats.missing.toLocaleString('ru-RU'), icon: 'Search' },
-                { label: 'Населенных пунктов', value: stats.regions, icon: 'Map' },
+                {
+                  label: "Всего записей",
+                  value: stats.total.toLocaleString("ru-RU"),
+                  icon: "Users",
+                },
+                {
+                  label: "Установлены",
+                  value: stats.found.toLocaleString("ru-RU"),
+                  icon: "CheckCircle2",
+                },
+                {
+                  label: "Ищем",
+                  value: stats.missing.toLocaleString("ru-RU"),
+                  icon: "Search",
+                },
+                {
+                  label: "Населенных пунктов",
+                  value: stats.regions,
+                  icon: "Map",
+                },
               ].map((stat, i) => (
-                <Card key={i} className="p-6 bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all animate-scale-in hover:scale-105" style={{ animationDelay: `${i * 0.1}s` }}>
-                  <Icon name={stat.icon as any} className="text-secondary mx-auto mb-2" size={32} />
-                  <div className="text-3xl font-bold text-primary mb-1">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                <Card
+                  key={i}
+                  className="p-6 bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all animate-scale-in hover:scale-105"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <Icon
+                    name={stat.icon as any}
+                    className="text-secondary mx-auto mb-2"
+                    size={32}
+                  />
+                  <div className="text-3xl font-bold text-primary mb-1">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
                 </Card>
               ))}
             </div>
@@ -204,9 +262,12 @@ const Index = () => {
             <div className="mb-12 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-4xl font-bold text-primary mb-2">База данных героев</h3>
+                  <h3 className="text-4xl font-bold text-primary mb-2">
+                    База данных героев
+                  </h3>
                   <p className="text-lg text-muted-foreground">
-                    Поиск по ФИО, годам службы, воинским частям, наградам и месту призыва
+                    Поиск по ФИО, годам службы, воинским частям, наградам и
+                    месту призыва
                   </p>
                 </div>
                 {!isAddingHero && authToken && (
@@ -226,7 +287,11 @@ const Index = () => {
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <div className="relative">
-                    <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                    <Icon
+                      name="Search"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                      size={20}
+                    />
                     <Input
                       placeholder="Поиск по ФИО, части, населенному пункту..."
                       value={searchQuery}
@@ -254,22 +319,22 @@ const Index = () => {
                   <option value="">Все населенные пункты</option>
                   <option value="Неклиновский район">Неклиновский район</option>
                   <option value="с. Покровское">с. Покровское</option>
-                  <option value="с. Неклиновское">с. Неклиновское</option>
                   <option value="с. Веселое">с. Веселое</option>
-                  <option value="с. Рождественка">с. Рождественка</option>
                 </select>
               </div>
-              
+
               {(searchQuery || filterRank || filterRegion) && (
                 <div className="mt-4 flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Найдено: {filteredHeroes.length}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Найдено: {filteredHeroes.length}
+                  </span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      setSearchQuery('');
-                      setFilterRank('');
-                      setFilterRegion('');
+                      setSearchQuery("");
+                      setFilterRank("");
+                      setFilterRegion("");
                     }}
                     className="text-primary hover:text-primary/80"
                   >
@@ -296,8 +361,14 @@ const Index = () => {
               </div>
             ) : filteredHeroes.length === 0 ? (
               <div className="text-center py-12">
-                <Icon name="Search" className="mx-auto text-muted-foreground mb-4" size={48} />
-                <p className="text-xl text-muted-foreground">Герои не найдены</p>
+                <Icon
+                  name="Search"
+                  className="mx-auto text-muted-foreground mb-4"
+                  size={48}
+                />
+                <p className="text-xl text-muted-foreground">
+                  Герои не найдены
+                </p>
               </div>
             ) : (
               <div className="grid md:grid-cols-2 gap-6">
@@ -323,25 +394,51 @@ const Index = () => {
         </div>
       </section>
 
-      <section id="about" className="py-16 bg-gradient-to-b from-background to-primary/5">
+      <section
+        id="about"
+        className="py-16 bg-gradient-to-b from-background to-primary/5"
+      >
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
             <Icon name="Heart" className="text-primary mx-auto" size={48} />
             <h3 className="text-4xl font-bold text-primary">О проекте</h3>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Наша миссия — увековечить память о каждом защитнике Отечества, ушедшем на фронт в годы 
-              Великой Отечественной войны. Мы работаем над тем, чтобы имена и судьбы героев стали 
-              известны их землякам и потомкам. Каждое имя — это история, каждая история — это подвиг.
+              Наша миссия — увековечить память о каждом защитнике Отечества,
+              ушедшем на фронт в годы Великой Отечественной войны. Мы работаем
+              над тем, чтобы имена и судьбы героев стали известны их землякам и
+              потомкам. Каждое имя — это история, каждая история — это подвиг.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mt-12">
               {[
-                { icon: 'BookOpen', title: 'Архивная работа', desc: 'Изучаем документы военных лет' },
-                { icon: 'Users', title: 'Народная память', desc: 'Собираем воспоминания и свидетельства' },
-                { icon: 'Globe', title: 'Доступность', desc: 'Открытая база для всех регионов России' },
+                {
+                  icon: "BookOpen",
+                  title: "Архивная работа",
+                  desc: "Изучаем документы военных лет",
+                },
+                {
+                  icon: "Users",
+                  title: "Народная память",
+                  desc: "Собираем воспоминания и свидетельства",
+                },
+                {
+                  icon: "Globe",
+                  title: "Доступность",
+                  desc: "Открытая база для всех регионов России",
+                },
               ].map((item, i) => (
-                <Card key={i} className="p-6 bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all hover:scale-105 animate-scale-in" style={{ animationDelay: `${i * 0.1}s` }}>
-                  <Icon name={item.icon as any} className="text-secondary mx-auto mb-4" size={40} />
-                  <h4 className="text-lg font-bold text-primary mb-2">{item.title}</h4>
+                <Card
+                  key={i}
+                  className="p-6 bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all hover:scale-105 animate-scale-in"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <Icon
+                    name={item.icon as any}
+                    className="text-secondary mx-auto mb-4"
+                    size={40}
+                  />
+                  <h4 className="text-lg font-bold text-primary mb-2">
+                    {item.title}
+                  </h4>
                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </Card>
               ))}
@@ -373,9 +470,15 @@ const Index = () => {
               Проект по сохранению памяти о героях Великой Отечественной войны
             </p>
             <div className="flex justify-center gap-6 text-sm">
-              <a href="#" className="text-primary hover:underline">Контакты</a>
-              <a href="#" className="text-primary hover:underline">Как помочь</a>
-              <a href="#" className="text-primary hover:underline">Документы</a>
+              <a href="#" className="text-primary hover:underline">
+                Контакты
+              </a>
+              <a href="#" className="text-primary hover:underline">
+                Как помочь
+              </a>
+              <a href="#" className="text-primary hover:underline">
+                Документы
+              </a>
             </div>
             <p className="text-xs text-muted-foreground pt-4">
               © 2024 Память Народа. Все герои достойны памяти.
