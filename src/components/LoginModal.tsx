@@ -82,7 +82,7 @@ export default function LoginModal({
               type="text"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
-              placeholder="neklinovsky5_admin"
+              placeholder=""
               required
               autoComplete="username"
             />
