@@ -1,5 +1,5 @@
 {
-  "get-heroes": "https://functions.poehali.dev/754ff53d-700c-498b-aaf8-76b53f28f4e5",
-  "submit-materials": "https://functions.poehali.dev/82f9aec1-b885-42e5-bc4d-86479f13423b",
-  "get-hero-detail": "https://functions.poehali.dev/47282d91-1195-4339-88c9-ea5c12894b5f"
+  "auth": "https://functions.poehali.dev/e4d620ba-23c6-492f-814f-b06208b57405",
+  "upload-file": "https://functions.poehali.dev/b076a2f8-a2c0-45ae-ad4b-74958a2cf7de",
+  "heroes": "https://functions.poehali.dev/1c7b2c09-4c55-4269-9476-1a0477fdfc6d"
 }

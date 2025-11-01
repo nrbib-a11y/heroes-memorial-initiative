@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,85 +10,64 @@ import MemoryMap from '@/components/MemoryMap';
 import UploadForm from '@/components/UploadForm';
 import HeroCard from '@/components/HeroCard';
 import AddHeroForm from '@/components/AddHeroForm';
+import { heroesAPI, Hero as APIHero } from '@/lib/api';
 
-interface Hero {
-  id: number;
-  name: string;
-  birthYear: number;
-  deathYear?: number;
-  rank: string;
-  unit: string;
-  awards: string[];
-  hometown: string;
-  region: string;
-  photo?: string;
-}
-
-const mockHeroes: Hero[] = [
-  {
-    id: 1,
-    name: 'Голубев Петр Иванович',
-    birthYear: 1920,
-    deathYear: 1943,
-    rank: 'Сержант',
-    unit: '5-я гвардейская танковая армия',
-    awards: ['Орден Красной Звезды', 'Медаль "За отвагу"'],
-    hometown: 'с. Покровское',
-    region: 'Неклиновский район',
-  },
-  {
-    id: 2,
-    name: 'Кузнецов Иван Степанович',
-    birthYear: 1918,
-    deathYear: 1945,
-    rank: 'Лейтенант',
-    unit: '150-я стрелковая дивизия',
-    awards: ['Орден Отечественной войны II степени', 'Медаль "За взятие Берлина"'],
-    hometown: 'с. Неклиновское',
-    region: 'Неклиновский район',
-  },
-  {
-    id: 3,
-    name: 'Волков Алексей Александрович',
-    birthYear: 1922,
-    rank: 'Рядовой',
-    unit: '3-я ударная армия',
-    awards: ['Медаль "За боевые заслуги"'],
-    hometown: 'с. Веселое',
-    region: 'Неклиновский район',
-  },
-  {
-    id: 4,
-    name: 'Беляев Николай Григорьевич',
-    birthYear: 1915,
-    deathYear: 1942,
-    rank: 'Старшина',
-    unit: '62-я армия',
-    awards: ['Орден Красного Знамени', 'Орден Славы III степени'],
-    hometown: 'с. Рождественка',
-    region: 'Неклиновский район',
-  },
-];
+type Hero = APIHero;
 
 const Index = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRank, setFilterRank] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
-  const [heroes, setHeroes] = useState<Hero[]>(mockHeroes);
+  const [heroes, setHeroes] = useState<Hero[]>([]);
   const [isAddingHero, setIsAddingHero] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleUpdateHero = (updatedHero: Hero) => {
-    setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
+  useEffect(() => {
+    loadHeroes();
+  }, []);
+
+  const loadHeroes = async () => {
+    try {
+      setLoading(true);
+      const data = await heroesAPI.getAll();
+      setHeroes(data);
+    } catch (error) {
+      console.error('Failed to load heroes:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteHero = (id: number) => {
-    setHeroes(heroes.filter(h => h.id !== id));
+  const handleUpdateHero = async (updatedHero: Hero) => {
+    try {
+      await heroesAPI.update(updatedHero);
+      setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
+    } catch (error) {
+      console.error('Failed to update hero:', error);
+      alert('Не удалось обновить данные');
+    }
   };
 
-  const handleAddHero = (newHero: Hero) => {
-    setHeroes([newHero, ...heroes]);
-    setIsAddingHero(false);
+  const handleDeleteHero = async (id: number) => {
+    try {
+      await heroesAPI.delete(id);
+      setHeroes(heroes.filter(h => h.id !== id));
+    } catch (error) {
+      console.error('Failed to delete hero:', error);
+      alert('Не удалось удалить героя');
+    }
+  };
+
+  const handleAddHero = async (newHero: Omit<Hero, 'id'>) => {
+    try {
+      await heroesAPI.create(newHero);
+      await loadHeroes();
+      setIsAddingHero(false);
+    } catch (error) {
+      console.error('Failed to add hero:', error);
+      alert('Не удалось добавить героя');
+    }
   };
 
   const filteredHeroes = heroes.filter((hero) => {
@@ -103,9 +82,9 @@ const Index = () => {
   });
 
   const stats = {
-    total: 4821,
-    found: 3245,
-    missing: 1576,
+    total: heroes.length,
+    found: heroes.filter(h => h.deathYear).length,
+    missing: heroes.filter(h => !h.deathYear).length,
     regions: 58,
   };
 
@@ -256,21 +235,33 @@ const Index = () => {
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {filteredHeroes.map((hero, index) => (
-                <div
-                  key={hero.id}
-                  className="animate-fade-in"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <HeroCard
-                    hero={hero}
-                    onUpdate={handleUpdateHero}
-                    onDelete={handleDeleteHero}
-                  />
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <p className="mt-4 text-muted-foreground">Загрузка данных...</p>
+              </div>
+            ) : filteredHeroes.length === 0 ? (
+              <div className="text-center py-12">
+                <Icon name="Search" className="mx-auto text-muted-foreground mb-4" size={48} />
+                <p className="text-xl text-muted-foreground">Герои не найдены</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {filteredHeroes.map((hero, index) => (
+                  <div
+                    key={hero.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
+                    <HeroCard
+                      hero={hero}
+                      onUpdate={handleUpdateHero}
+                      onDelete={handleDeleteHero}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

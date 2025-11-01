@@ -13,12 +13,12 @@ interface Region {
 }
 
 const regions: Region[] = [
-  { id: 1, name: 'Курская область', heroes: 45230, found: 32100, missing: 13130, coordinates: { x: 55, y: 48 } },
-  { id: 2, name: 'Тульская область', heroes: 38900, found: 29400, missing: 9500, coordinates: { x: 52, y: 42 } },
-  { id: 3, name: 'Смоленская область', heroes: 52400, found: 38200, missing: 14200, coordinates: { x: 48, y: 38 } },
-  { id: 4, name: 'Московская область', heroes: 98700, found: 76500, missing: 22200, coordinates: { x: 50, y: 40 } },
-  { id: 5, name: 'Волгоградская область', heroes: 67800, found: 51200, missing: 16600, coordinates: { x: 60, y: 58 } },
-  { id: 6, name: 'Ленинградская область', heroes: 89200, found: 68900, missing: 20300, coordinates: { x: 45, y: 22 } },
+  { id: 1, name: 'с. Покровское', heroes: 1245, found: 834, missing: 411, coordinates: { x: 50, y: 50 } },
+  { id: 2, name: 'с. Неклиновское', heroes: 987, found: 623, missing: 364, coordinates: { x: 45, y: 48 } },
+  { id: 3, name: 'с. Веселое', heroes: 756, found: 512, missing: 244, coordinates: { x: 55, y: 52 } },
+  { id: 4, name: 'с. Рождественка', heroes: 623, found: 421, missing: 202, coordinates: { x: 48, y: 45 } },
+  { id: 5, name: 'с. Вареновка', heroes: 543, found: 367, missing: 176, coordinates: { x: 52, y: 55 } },
+  { id: 6, name: 'п. Приморка', heroes: 667, found: 488, missing: 179, coordinates: { x: 58, y: 48 } },
 ];
 
 const MemoryMap = () => {
@@ -32,7 +32,7 @@ const MemoryMap = () => {
           <div className="text-center mb-12 animate-fade-in">
             <h3 className="text-4xl font-bold text-primary mb-4">Карта памяти</h3>
             <p className="text-lg text-muted-foreground">
-              Интерактивная карта России с данными по регионам
+              Интерактивная карта населенных пунктов Неклиновского района
             </p>
           </div>
 
