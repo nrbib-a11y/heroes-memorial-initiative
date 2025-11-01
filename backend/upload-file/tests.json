@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "Upload file endpoint available",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "file": "dGVzdA==",
+        "filename": "test.jpg",
+        "contentType": "image/jpeg",
+        "folder": "photos"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "url": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

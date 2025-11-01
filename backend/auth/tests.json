@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "Auth endpoint available",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "login": "test",
+        "password": "test"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -37,7 +37,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             if hero_id:
                 cur.execute(
-                    'SELECT id, full_name, birth_year, death_year, rank, military_unit, hometown, district, biography, birth_place, death_place FROM heroes WHERE id = %s',
+                    'SELECT id, full_name, birth_year, death_year, rank, military_unit, hometown, district, biography, birth_place, death_place, photo_url, documents FROM heroes WHERE id = %s',
                     (hero_id,)
                 )
                 row = cur.fetchone()
@@ -54,6 +54,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'biography': row[8],
                         'birthPlace': row[9],
                         'deathPlace': row[10],
+                        'photo': row[11],
+                        'documents': row[12] if row[12] else [],
                         'awards': []
                     }
                     return {
@@ -68,7 +70,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'body': json.dumps({'error': 'Hero not found'})
                     }
             else:
-                cur.execute('SELECT id, full_name, birth_year, death_year, rank, military_unit, hometown, district FROM heroes ORDER BY id')
+                cur.execute('SELECT id, full_name, birth_year, death_year, rank, military_unit, hometown, district, photo_url FROM heroes ORDER BY id')
                 rows = cur.fetchall()
                 heroes = [{
                     'id': row[0],
@@ -79,6 +81,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'unit': row[5],
                     'hometown': row[6],
                     'region': row[7],
+                    'photo': row[8],
                     'awards': []
                 } for row in rows]
                 
@@ -92,8 +95,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             body_data = json.loads(event.get('body', '{}'))
             
             cur.execute(
-                '''INSERT INTO heroes (full_name, birth_year, death_year, rank, military_unit, hometown, district, biography, birth_place, death_place) 
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id''',
+                '''INSERT INTO heroes (full_name, birth_year, death_year, rank, military_unit, hometown, district, biography, birth_place, death_place, photo_url, documents) 
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id''',
                 (
                     body_data.get('name'),
                     body_data.get('birthYear'),
@@ -104,7 +107,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     body_data.get('region', 'Неклиновский район'),
                     body_data.get('biography', ''),
                     body_data.get('birthPlace', ''),
-                    body_data.get('deathPlace', '')
+                    body_data.get('deathPlace', ''),
+                    body_data.get('photo'),
+                    json.dumps(body_data.get('documents', []))
                 )
             )
             new_id = cur.fetchone()[0]
@@ -130,7 +135,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cur.execute(
                 '''UPDATE heroes SET full_name = %s, birth_year = %s, death_year = %s, 
                    rank = %s, military_unit = %s, hometown = %s, district = %s, 
-                   biography = %s, birth_place = %s, death_place = %s, updated_at = CURRENT_TIMESTAMP
+                   biography = %s, birth_place = %s, death_place = %s, photo_url = %s, documents = %s, updated_at = CURRENT_TIMESTAMP
                    WHERE id = %s''',
                 (
                     body_data.get('name'),
@@ -143,6 +148,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     body_data.get('biography', ''),
                     body_data.get('birthPlace', ''),
                     body_data.get('deathPlace', ''),
+                    body_data.get('photo'),
+                    json.dumps(body_data.get('documents', [])),
                     hero_id
                 )
             )

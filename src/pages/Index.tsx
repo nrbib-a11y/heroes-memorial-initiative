@@ -10,6 +10,7 @@ import MemoryMap from '@/components/MemoryMap';
 import UploadForm from '@/components/UploadForm';
 import HeroCard from '@/components/HeroCard';
 import AddHeroForm from '@/components/AddHeroForm';
+import LoginForm from '@/components/LoginForm';
 import { heroesAPI, Hero as APIHero } from '@/lib/api';
 
 type Hero = APIHero;
@@ -22,10 +23,43 @@ const Index = () => {
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [isAddingHero, setIsAddingHero] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     loadHeroes();
+    const token = localStorage.getItem('admin_token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
   }, []);
+
+  const handleLoginSuccess = (token: string) => {
+    setIsAuthenticated(true);
+    setShowLogin(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token');
+    setIsAuthenticated(false);
+    setIsAddingHero(false);
+  };
+
+  const handleAddHeroClick = () => {
+    if (isAuthenticated) {
+      setIsAddingHero(true);
+    } else {
+      setShowLogin(true);
+    }
+  };
+
+  const handleEditClick = () => {
+    if (!isAuthenticated) {
+      setShowLogin(true);
+      return false;
+    }
+    return true;
+  };
 
   const loadHeroes = async () => {
     try {
@@ -102,10 +136,21 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Память о защитниках Отечества</p>
               </div>
             </div>
-            <nav className="hidden md:flex gap-6">
+            <nav className="hidden md:flex gap-6 items-center">
               <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
               <a href="#map" className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</a>
               <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
+              {isAuthenticated ? (
+                <Button onClick={handleLogout} size="sm" variant="outline">
+                  <Icon name="LogOut" size={14} className="mr-2" />
+                  Выйти
+                </Button>
+              ) : (
+                <Button onClick={() => setShowLogin(true)} size="sm" variant="outline">
+                  <Icon name="Lock" size={14} className="mr-2" />
+                  Войти
+                </Button>
+              )}
             </nav>
           </div>
         </div>
@@ -157,7 +202,7 @@ const Index = () => {
                 </div>
                 {!isAddingHero && (
                   <Button
-                    onClick={() => setIsAddingHero(true)}
+                    onClick={handleAddHeroClick}
                     size="lg"
                     className="bg-primary hover:bg-primary/90"
                   >
@@ -258,6 +303,7 @@ const Index = () => {
                       hero={hero}
                       onUpdate={handleUpdateHero}
                       onDelete={handleDeleteHero}
+                      isAuthenticated={isAuthenticated}
                     />
                   </div>
                 ))}
@@ -297,6 +343,13 @@ const Index = () => {
       <MemoryMap />
 
       <UploadForm />
+
+      {showLogin && (
+        <LoginForm
+          onSuccess={handleLoginSuccess}
+          onCancel={() => setShowLogin(false)}
+        />
+      )}
 
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4">
