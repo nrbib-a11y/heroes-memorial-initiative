@@ -19,7 +19,7 @@ interface Hero {
 }
 
 interface AddHeroFormProps {
-  onAdd: (hero: Omit<Hero, 'id'>) => void;
+  onAdd: (hero: Hero) => void;
   onCancel: () => void;
 }
 
@@ -38,7 +38,8 @@ const AddHeroForm = ({ onAdd, onCancel }: AddHeroFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newHero = {
+    const newHero: Hero = {
+      id: Date.now(),
       name: formData.name,
       birthYear: parseInt(formData.birthYear),
       deathYear: formData.deathYear ? parseInt(formData.deathYear) : undefined,

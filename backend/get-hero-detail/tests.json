@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Get hero detail by ID",
+      "method": "GET",
+      "path": "/?id=1",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "id": "number",
+        "name": "string",
+        "birthYear": "number",
+        "awards": "array",
+        "militaryPath": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Hero not found",
+      "method": "GET",
+      "path": "/?id=99999",
+      "expectedStatus": 404
+    }
+  ]
+}

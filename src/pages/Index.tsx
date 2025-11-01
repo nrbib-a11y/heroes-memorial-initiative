@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,98 +10,85 @@ import MemoryMap from '@/components/MemoryMap';
 import UploadForm from '@/components/UploadForm';
 import HeroCard from '@/components/HeroCard';
 import AddHeroForm from '@/components/AddHeroForm';
-import LoginForm from '@/components/LoginForm';
-import { heroesAPI, Hero as APIHero } from '@/lib/api';
 
-type Hero = APIHero;
+interface Hero {
+  id: number;
+  name: string;
+  birthYear: number;
+  deathYear?: number;
+  rank: string;
+  unit: string;
+  awards: string[];
+  hometown: string;
+  region: string;
+  photo?: string;
+}
+
+const mockHeroes: Hero[] = [
+  {
+    id: 1,
+    name: 'Голубев Петр Иванович',
+    birthYear: 1920,
+    deathYear: 1943,
+    rank: 'Сержант',
+    unit: '5-я гвардейская танковая армия',
+    awards: ['Орден Красной Звезды', 'Медаль "За отвагу"'],
+    hometown: 'с. Покровское',
+    region: 'Неклиновский район',
+  },
+  {
+    id: 2,
+    name: 'Кузнецов Иван Степанович',
+    birthYear: 1918,
+    deathYear: 1945,
+    rank: 'Лейтенант',
+    unit: '150-я стрелковая дивизия',
+    awards: ['Орден Отечественной войны II степени', 'Медаль "За взятие Берлина"'],
+    hometown: 'с. Неклиновское',
+    region: 'Неклиновский район',
+  },
+  {
+    id: 3,
+    name: 'Волков Алексей Александрович',
+    birthYear: 1922,
+    rank: 'Рядовой',
+    unit: '3-я ударная армия',
+    awards: ['Медаль "За боевые заслуги"'],
+    hometown: 'с. Веселое',
+    region: 'Неклиновский район',
+  },
+  {
+    id: 4,
+    name: 'Беляев Николай Григорьевич',
+    birthYear: 1915,
+    deathYear: 1942,
+    rank: 'Старшина',
+    unit: '62-я армия',
+    awards: ['Орден Красного Знамени', 'Орден Славы III степени'],
+    hometown: 'с. Рождественка',
+    region: 'Неклиновский район',
+  },
+];
 
 const Index = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRank, setFilterRank] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
-  const [heroes, setHeroes] = useState<Hero[]>([]);
+  const [heroes, setHeroes] = useState<Hero[]>(mockHeroes);
   const [isAddingHero, setIsAddingHero] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
 
-  useEffect(() => {
-    loadHeroes();
-    const token = localStorage.getItem('admin_token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleLoginSuccess = (token: string) => {
-    setIsAuthenticated(true);
-    setShowLogin(false);
+  const handleUpdateHero = (updatedHero: Hero) => {
+    setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    setIsAuthenticated(false);
+  const handleDeleteHero = (id: number) => {
+    setHeroes(heroes.filter(h => h.id !== id));
+  };
+
+  const handleAddHero = (newHero: Hero) => {
+    setHeroes([newHero, ...heroes]);
     setIsAddingHero(false);
-  };
-
-  const handleAddHeroClick = () => {
-    if (isAuthenticated) {
-      setIsAddingHero(true);
-    } else {
-      setShowLogin(true);
-    }
-  };
-
-  const handleEditClick = () => {
-    if (!isAuthenticated) {
-      setShowLogin(true);
-      return false;
-    }
-    return true;
-  };
-
-  const loadHeroes = async () => {
-    try {
-      setLoading(true);
-      const data = await heroesAPI.getAll();
-      setHeroes(data);
-    } catch (error) {
-      console.error('Failed to load heroes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateHero = async (updatedHero: Hero) => {
-    try {
-      await heroesAPI.update(updatedHero);
-      setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
-    } catch (error) {
-      console.error('Failed to update hero:', error);
-      alert('Не удалось обновить данные героя');
-    }
-  };
-
-  const handleDeleteHero = async (id: number) => {
-    try {
-      await heroesAPI.delete(id);
-      setHeroes(heroes.filter(h => h.id !== id));
-    } catch (error) {
-      console.error('Failed to delete hero:', error);
-      alert('Не удалось удалить героя');
-    }
-  };
-
-  const handleAddHero = async (newHero: Omit<Hero, 'id'>) => {
-    try {
-      const result = await heroesAPI.create(newHero);
-      await loadHeroes();
-      setIsAddingHero(false);
-    } catch (error) {
-      console.error('Failed to add hero:', error);
-      alert('Не удалось добавить героя');
-    }
   };
 
   const filteredHeroes = heroes.filter((hero) => {
@@ -116,9 +103,9 @@ const Index = () => {
   });
 
   const stats = {
-    total: heroes.length,
-    found: heroes.filter(h => h.deathYear).length,
-    missing: heroes.filter(h => !h.deathYear).length,
+    total: 4821,
+    found: 3245,
+    missing: 1576,
     regions: 58,
   };
 
@@ -136,21 +123,10 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Память о защитниках Отечества</p>
               </div>
             </div>
-            <nav className="hidden md:flex gap-6 items-center">
+            <nav className="hidden md:flex gap-6">
               <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
               <a href="#map" className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</a>
               <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
-              {isAuthenticated ? (
-                <Button onClick={handleLogout} size="sm" variant="outline">
-                  <Icon name="LogOut" size={14} className="mr-2" />
-                  Выйти
-                </Button>
-              ) : (
-                <Button onClick={() => setShowLogin(true)} size="sm" variant="outline">
-                  <Icon name="Lock" size={14} className="mr-2" />
-                  Войти
-                </Button>
-              )}
             </nav>
           </div>
         </div>
@@ -202,7 +178,7 @@ const Index = () => {
                 </div>
                 {!isAddingHero && (
                   <Button
-                    onClick={handleAddHeroClick}
+                    onClick={() => setIsAddingHero(true)}
                     size="lg"
                     className="bg-primary hover:bg-primary/90"
                   >
@@ -280,35 +256,21 @@ const Index = () => {
               </div>
             )}
 
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                <p className="mt-4 text-muted-foreground">Загрузка данных...</p>
-              </div>
-            ) : filteredHeroes.length === 0 ? (
-              <div className="text-center py-12">
-                <Icon name="Search" className="mx-auto text-muted-foreground mb-4" size={48} />
-                <p className="text-xl text-muted-foreground">Герои не найдены</p>
-                <p className="text-sm text-muted-foreground mt-2">Попробуйте изменить параметры поиска</p>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-6">
-                {filteredHeroes.map((hero, index) => (
-                  <div
-                    key={hero.id}
-                    className="animate-fade-in"
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <HeroCard
-                      hero={hero}
-                      onUpdate={handleUpdateHero}
-                      onDelete={handleDeleteHero}
-                      isAuthenticated={isAuthenticated}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="grid md:grid-cols-2 gap-6">
+              {filteredHeroes.map((hero, index) => (
+                <div
+                  key={hero.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
+                  <HeroCard
+                    hero={hero}
+                    onUpdate={handleUpdateHero}
+                    onDelete={handleDeleteHero}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -343,13 +305,6 @@ const Index = () => {
       <MemoryMap />
 
       <UploadForm />
-
-      {showLogin && (
-        <LoginForm
-          onSuccess={handleLoginSuccess}
-          onCancel={() => setShowLogin(false)}
-        />
-      )}
 
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4">
