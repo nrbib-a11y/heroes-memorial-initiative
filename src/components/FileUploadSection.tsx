@@ -15,9 +15,10 @@ interface FileUploadSectionProps {
   heroId: number;
   authToken: string;
   onFileUploaded?: () => void;
+  onPhotoUploaded?: () => void;
 }
 
-export default function FileUploadSection({ heroId, authToken, onFileUploaded }: FileUploadSectionProps) {
+export default function FileUploadSection({ heroId, authToken, onFileUploaded, onPhotoUploaded }: FileUploadSectionProps) {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -65,6 +66,9 @@ export default function FileUploadSection({ heroId, authToken, onFileUploaded }:
         if (response.ok) {
           await loadFiles();
           onFileUploaded?.();
+          if (fileType === 'photo') {
+            onPhotoUploaded?.();
+          }
         } else {
           const error = await response.json();
           alert(`Ошибка загрузки: ${error.error}`);
@@ -95,8 +99,12 @@ export default function FileUploadSection({ heroId, authToken, onFileUploaded }:
       );
 
       if (response.ok) {
+        const deletedFile = files.find(f => f.id === fileId);
         await loadFiles();
         onFileUploaded?.();
+        if (deletedFile?.file_type === 'photo') {
+          onPhotoUploaded?.();
+        }
       }
     } catch (error) {
       console.error('Delete failed:', error);

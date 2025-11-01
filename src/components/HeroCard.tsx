@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,8 @@ interface HeroCardProps {
 const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: HeroCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedHero, setEditedHero] = useState<Hero>(hero);
+  const [heroPhoto, setHeroPhoto] = useState<string | null>(null);
+  const [loadingPhoto, setLoadingPhoto] = useState(false);
 
   const handleSave = () => {
     onUpdate(editedHero);
@@ -46,6 +48,28 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
     const awardsArray = value.split('\n').filter(a => a.trim());
     setEditedHero({ ...editedHero, awards: awardsArray });
   };
+
+  const loadHeroPhoto = async () => {
+    try {
+      setLoadingPhoto(true);
+      const response = await fetch(
+        `https://functions.poehali.dev/5b374262-df50-4d0c-a58d-7670e30be3c1?hero_id=${hero.id}`
+      );
+      const files = await response.json();
+      const photo = files.find((f: any) => f.file_type === 'photo');
+      if (photo?.file_data) {
+        setHeroPhoto(photo.file_data);
+      }
+    } catch (error) {
+      console.error('Failed to load photo:', error);
+    } finally {
+      setLoadingPhoto(false);
+    }
+  };
+
+  useEffect(() => {
+    loadHeroPhoto();
+  }, [hero.id]);
 
   if (isEditing) {
     return (
@@ -145,7 +169,11 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
           </div>
           
           {authToken && (
-            <FileUploadSection heroId={hero.id} authToken={authToken} />
+            <FileUploadSection 
+              heroId={hero.id} 
+              authToken={authToken}
+              onPhotoUploaded={loadHeroPhoto}
+            />
           )}
         </div>
       </Card>
@@ -154,8 +182,20 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
 
   return (
     <Card className="p-6 bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all group">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
+      <div className="flex items-start gap-4 mb-4">
+        {heroPhoto ? (
+          <img
+            src={heroPhoto}
+            alt={hero.name}
+            className="w-20 h-20 rounded-lg object-cover border-2 border-primary/30"
+          />
+        ) : (
+          <div className="w-20 h-20 rounded-lg bg-muted/50 flex items-center justify-center border-2 border-primary/20">
+            <Icon name="User" size={32} className="text-muted-foreground" />
+          </div>
+        )}
+        
+        <div className="flex-1 min-w-0">
           <h3 className="text-xl font-bold text-primary mb-2">{hero.name}</h3>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
