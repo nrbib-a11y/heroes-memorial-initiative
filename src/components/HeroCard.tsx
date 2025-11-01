@@ -26,9 +26,10 @@ interface HeroCardProps {
   onDelete?: (id: number) => void;
   isEditable?: boolean;
   authToken?: string | null;
+  onNameClick?: () => void;
 }
 
-const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: HeroCardProps) => {
+const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken, onNameClick }: HeroCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedHero, setEditedHero] = useState<Hero>(hero);
   const [heroPhoto, setHeroPhoto] = useState<string | null>(null);
@@ -202,7 +203,12 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: H
         )}
         
         <div className="flex-1 min-w-0">
-          <h3 className="text-xl font-bold text-primary mb-2">{hero.name}</h3>
+          <h3 
+            className="text-xl font-bold text-primary mb-2 cursor-pointer hover:underline" 
+            onClick={onNameClick}
+          >
+            {hero.name}
+          </h3>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <Icon name="Calendar" size={14} />

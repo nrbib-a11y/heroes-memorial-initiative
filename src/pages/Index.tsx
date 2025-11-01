@@ -11,6 +11,7 @@ import UploadForm from '@/components/UploadForm';
 import HeroCard from '@/components/HeroCard';
 import AddHeroForm from '@/components/AddHeroForm';
 import LoginModal from '@/components/LoginModal';
+import HeroDetailModal from '@/components/HeroDetailModal';
 import { heroesAPI, Hero as APIHero } from '@/lib/api';
 
 type Hero = APIHero;
@@ -26,6 +27,8 @@ const Index = () => {
   const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
   const [userLogin, setUserLogin] = useState<string | null>(localStorage.getItem('userLogin'));
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
+  const [showHeroDetail, setShowHeroDetail] = useState(false);
 
   useEffect(() => {
     loadHeroes();
@@ -86,6 +89,11 @@ const Index = () => {
     setUserLogin(null);
     localStorage.removeItem('authToken');
     localStorage.removeItem('userLogin');
+  };
+
+  const handleHeroClick = (hero: Hero) => {
+    setSelectedHero(hero);
+    setShowHeroDetail(true);
   };
 
   const filteredHeroes = heroes.filter((hero) => {
@@ -307,6 +315,7 @@ const Index = () => {
                       onDelete={handleDeleteHero}
                       isEditable={!!authToken}
                       authToken={authToken}
+                      onNameClick={() => handleHeroClick(hero)}
                     />
                   </div>
                 ))}
@@ -351,6 +360,12 @@ const Index = () => {
         open={showLoginModal}
         onClose={() => setShowLoginModal(false)}
         onLogin={handleLogin}
+      />
+
+      <HeroDetailModal
+        hero={selectedHero}
+        open={showHeroDetail}
+        onClose={() => setShowHeroDetail(false)}
       />
 
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
