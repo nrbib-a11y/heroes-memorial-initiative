@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
-import MemoryMap from '@/components/MemoryMap';
-import UploadForm from '@/components/UploadForm';
 import HeroCard from '@/components/HeroCard';
 import AddHeroForm from '@/components/AddHeroForm';
 import LoginModal from '@/components/LoginModal';
@@ -131,7 +129,7 @@ const Index = () => {
             <div className="flex items-center gap-6">
               <nav className="hidden md:flex gap-6">
                 <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
-                <a href="#map" className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</a>
+                <button onClick={() => navigate('/map')} className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</button>
                 <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
               </nav>
               
@@ -351,10 +349,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      <MemoryMap />
-
-      <UploadForm />
 
       <LoginModal
         open={showLoginModal}
