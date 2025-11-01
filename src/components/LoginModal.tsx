@@ -1,9 +1,15 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Icon from '@/components/ui/icon';
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Icon from "@/components/ui/icon";
 
 interface LoginModalProps {
   open: boolean;
@@ -11,38 +17,45 @@ interface LoginModalProps {
   onLogin: (token: string, login: string) => void;
 }
 
-export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) {
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
+export default function LoginModal({
+  open,
+  onClose,
+  onLogin,
+}: LoginModalProps) {
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await fetch('https://functions.poehali.dev/e4d620ba-23c6-492f-814f-b06208b57405', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        "https://functions.poehali.dev/e4d620ba-23c6-492f-814f-b06208b57405",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ login, password }),
         },
-        body: JSON.stringify({ login, password }),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         onLogin(data.token, data.login);
-        setLogin('');
-        setPassword('');
+        setLogin("");
+        setPassword("");
         onClose();
       } else {
-        setError(data.error || 'Ошибка авторизации');
+        setError(data.error || "Ошибка авторизации");
       }
     } catch (err) {
-      setError('Ошибка подключения к серверу');
+      setError("Ошибка подключения к серверу");
     } finally {
       setLoading(false);
     }
@@ -60,7 +73,7 @@ export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) 
             Введите логин и пароль для доступа к редактору
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="login">Логин</Label>
@@ -69,12 +82,12 @@ export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) 
               type="text"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
-              placeholder="neklinovsky_admin"
+              placeholder="neklinovsky5_admin"
               required
               autoComplete="username"
             />
           </div>
-          
+
           <div>
             <Label htmlFor="password">Пароль</Label>
             <Input
@@ -107,14 +120,14 @@ export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) 
             >
               Отмена
             </Button>
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={loading}
-            >
+            <Button type="submit" className="flex-1" disabled={loading}>
               {loading ? (
                 <>
-                  <Icon name="Loader2" className="animate-spin mr-2" size={16} />
+                  <Icon
+                    name="Loader2"
+                    className="animate-spin mr-2"
+                    size={16}
+                  />
                   Вход...
                 </>
               ) : (
