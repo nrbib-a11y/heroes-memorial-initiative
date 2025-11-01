@@ -5,8 +5,8 @@
       "method": "POST",
       "path": "/",
       "body": {
-        "login": "neklinovsky5_admin",
-        "password": "Heroes2024!"
+        "login": "neklinovsky_admin",
+        "password": "Heroes2025!"
       },
       "expectedStatus": 200,
       "expectedBody": {
