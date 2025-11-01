@@ -11,7 +11,7 @@
       "expectedStatus": 200,
       "expectedBody": {
         "token": "string",
-        "login": "neklinovsky_admin"
+        "login": "neklinovsky"
       },
       "bodyMatcher": "partial"
     },
