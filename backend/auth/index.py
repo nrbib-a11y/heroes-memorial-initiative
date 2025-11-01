@@ -1,74 +1,114 @@
+'''
+Business: Authenticate admin user and issue JWT token
+Args: event with httpMethod, body (login/password)
+Returns: HTTP response with JWT token or error
+'''
+
 import json
-import os
+import jwt
+from datetime import datetime, timedelta
 from typing import Dict, Any
-import hashlib
-import secrets
+
+SECRET_KEY = "neklinovsky_heroes_secret_2024"
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    '''
-    Business: Авторизация администратора для доступа к редактору героев
-    Args: event с httpMethod, body (login, password)
-    Returns: JSON с токеном доступа или ошибкой
-    '''
-    method: str = event.get('httpMethod', 'POST')
+    method: str = event.get('httpMethod', 'GET')
     
     if method == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token',
                 'Access-Control-Max-Age': '86400'
             },
             'body': ''
         }
     
-    if method != 'POST':
-        return {
-            'statusCode': 405,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'Method not allowed'})
-        }
-    
-    try:
+    if method == 'POST':
         body_data = json.loads(event.get('body', '{}'))
+        login = body_data.get('login', '')
+        password = body_data.get('password', '')
         
-        login = body_data.get('login', '').strip()
-        password = body_data.get('password', '').strip()
-        
-        admin_login = os.environ.get('ADMIN_LOGIN', 'admin')
-        admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
-        
-        if not login or not password:
-            return {
-                'statusCode': 400,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Логин и пароль обязательны'})
-            }
-        
-        if login == admin_login and password == admin_password:
-            token = secrets.token_urlsafe(32)
+        if login == 'neklinovsky_admin' and password == 'Heroes2024!':
+            token = jwt.encode({
+                'login': login,
+                'exp': datetime.utcnow() + timedelta(days=7)
+            }, SECRET_KEY, algorithm='HS256')
             
             return {
                 'statusCode': 200,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({
-                    'success': True,
-                    'token': token,
-                    'message': 'Авторизация успешна'
-                })
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'isBase64Encoded': False,
+                'body': json.dumps({'token': token, 'login': login})
             }
-        else:
+        
+        return {
+            'statusCode': 401,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'isBase64Encoded': False,
+            'body': json.dumps({'error': 'Invalid credentials'})
+        }
+    
+    if method == 'GET':
+        auth_header = event.get('headers', {}).get('X-Auth-Token', '')
+        
+        if not auth_header:
             return {
                 'statusCode': 401,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Неверный логин или пароль'})
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'No token provided'})
+            }
+        
+        try:
+            payload = jwt.decode(auth_header, SECRET_KEY, algorithms=['HS256'])
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'isBase64Encoded': False,
+                'body': json.dumps({'login': payload['login']})
+            }
+        except jwt.ExpiredSignatureError:
+            return {
+                'statusCode': 401,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Token expired'})
+            }
+        except jwt.InvalidTokenError:
+            return {
+                'statusCode': 401,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Invalid token'})
             }
     
-    except Exception as e:
-        return {
-            'statusCode': 500,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': f'Ошибка авторизации: {str(e)}'})
-        }
+    return {
+        'statusCode': 405,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'isBase64Encoded': False,
+        'body': json.dumps({'error': 'Method not allowed'})
+    }

@@ -1,18 +1,29 @@
 {
   "tests": [
     {
-      "name": "Auth endpoint available",
+      "name": "Login with correct credentials",
       "method": "POST",
       "path": "/",
       "body": {
-        "login": "test",
-        "password": "test"
+        "login": "neklinovsky_admin",
+        "password": "Heroes2024!"
       },
-      "expectedStatus": 401,
+      "expectedStatus": 200,
       "expectedBody": {
-        "error": "string"
+        "token": "string",
+        "login": "neklinovsky_admin"
       },
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "Login with wrong credentials",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "login": "wrong",
+        "password": "wrong"
+      },
+      "expectedStatus": 401
     }
   ]
 }

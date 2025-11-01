@@ -10,6 +10,7 @@ import MemoryMap from '@/components/MemoryMap';
 import UploadForm from '@/components/UploadForm';
 import HeroCard from '@/components/HeroCard';
 import AddHeroForm from '@/components/AddHeroForm';
+import LoginModal from '@/components/LoginModal';
 import { heroesAPI, Hero as APIHero } from '@/lib/api';
 
 type Hero = APIHero;
@@ -22,6 +23,9 @@ const Index = () => {
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [isAddingHero, setIsAddingHero] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
+  const [userLogin, setUserLogin] = useState<string | null>(localStorage.getItem('userLogin'));
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     loadHeroes();
@@ -70,6 +74,20 @@ const Index = () => {
     }
   };
 
+  const handleLogin = (token: string, login: string) => {
+    setAuthToken(token);
+    setUserLogin(login);
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('userLogin', login);
+  };
+
+  const handleLogout = () => {
+    setAuthToken(null);
+    setUserLogin(null);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userLogin');
+  };
+
   const filteredHeroes = heroes.filter((hero) => {
     const matchesSearch = hero.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       hero.unit.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -102,11 +120,41 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Память о защитниках Отечества</p>
               </div>
             </div>
-            <nav className="hidden md:flex gap-6">
-              <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
-              <a href="#map" className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</a>
-              <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
-            </nav>
+            <div className="flex items-center gap-6">
+              <nav className="hidden md:flex gap-6">
+                <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
+                <a href="#map" className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</a>
+                <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
+              </nav>
+              
+              {authToken ? (
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="gap-2">
+                    <Icon name="User" size={14} />
+                    {userLogin}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="gap-2"
+                  >
+                    <Icon name="LogOut" size={16} />
+                    Выйти
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowLoginModal(true)}
+                  className="gap-2"
+                >
+                  <Icon name="Shield" size={16} />
+                  Войти
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -155,7 +203,7 @@ const Index = () => {
                     Поиск по ФИО, годам службы, воинским частям, наградам и месту призыва
                   </p>
                 </div>
-                {!isAddingHero && (
+                {!isAddingHero && authToken && (
                   <Button
                     onClick={() => setIsAddingHero(true)}
                     size="lg"
@@ -257,6 +305,8 @@ const Index = () => {
                       hero={hero}
                       onUpdate={handleUpdateHero}
                       onDelete={handleDeleteHero}
+                      isEditable={!!authToken}
+                      authToken={authToken}
                     />
                   </div>
                 ))}
@@ -296,6 +346,12 @@ const Index = () => {
       <MemoryMap />
 
       <UploadForm />
+
+      <LoginModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleLogin}
+      />
 
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4">

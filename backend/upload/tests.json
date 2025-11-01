@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "Get all files",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Upload without auth fails",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "hero_id": 1,
+        "file_name": "test.jpg",
+        "file_type": "photo",
+        "file_data": "base64data"
+      },
+      "expectedStatus": 401
+    }
+  ]
+}

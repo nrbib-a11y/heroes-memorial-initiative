@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
+import FileUploadSection from './FileUploadSection';
 
 interface Hero {
   id: number;
@@ -23,9 +24,11 @@ interface HeroCardProps {
   hero: Hero;
   onUpdate: (updatedHero: Hero) => void;
   onDelete?: (id: number) => void;
+  isEditable?: boolean;
+  authToken?: string | null;
 }
 
-const HeroCard = ({ hero, onUpdate, onDelete }: HeroCardProps) => {
+const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken }: HeroCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedHero, setEditedHero] = useState<Hero>(hero);
 
@@ -140,6 +143,10 @@ const HeroCard = ({ hero, onUpdate, onDelete }: HeroCardProps) => {
               />
             </div>
           </div>
+          
+          {authToken && (
+            <FileUploadSection heroId={hero.id} authToken={authToken} />
+          )}
         </div>
       </Card>
     );
@@ -161,16 +168,18 @@ const HeroCard = ({ hero, onUpdate, onDelete }: HeroCardProps) => {
             </span>
           </div>
         </div>
-        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button onClick={() => setIsEditing(true)} size="sm" variant="outline">
-            <Icon name="Edit" size={16} />
-          </Button>
-          {onDelete && (
-            <Button onClick={() => onDelete(hero.id)} size="sm" variant="outline" className="text-destructive hover:text-destructive">
-              <Icon name="Trash2" size={16} />
+        {isEditable && (
+          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button onClick={() => setIsEditing(true)} size="sm" variant="outline">
+              <Icon name="Edit" size={16} />
             </Button>
-          )}
-        </div>
+            {onDelete && (
+              <Button onClick={() => onDelete(hero.id)} size="sm" variant="outline" className="text-destructive hover:text-destructive">
+                <Icon name="Trash2" size={16} />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">
