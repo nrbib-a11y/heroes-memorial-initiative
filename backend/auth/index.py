@@ -31,7 +31,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         login = body_data.get('login', '')
         password = body_data.get('password', '')
         
-        if login == 'neklinovsky5_admin' and password == 'Heroes2024!':
+        if login == 'neklinovsky_admin' and password == 'Heroes2024!':
             token = jwt.encode({
                 'login': login,
                 'exp': datetime.utcnow() + timedelta(days=7)
