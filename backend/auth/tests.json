@@ -6,12 +6,12 @@
       "path": "/",
       "body": {
         "login": "neklinovsky_admin",
-        "password": "Heroes2025!"
+        "password": "Heroes2024!"
       },
       "expectedStatus": 200,
       "expectedBody": {
         "token": "string",
-        "login": "neklinovsky"
+        "login": "neklinovsky_adm"
       },
       "bodyMatcher": "partial"
     },
