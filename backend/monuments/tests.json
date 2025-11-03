@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Get all monuments",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "monuments": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

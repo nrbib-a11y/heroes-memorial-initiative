@@ -10,7 +10,7 @@ import HeroCard from '@/components/HeroCard';
 import AddHeroForm from '@/components/AddHeroForm';
 import LoginModal from '@/components/LoginModal';
 import HeroDetailModal from '@/components/HeroDetailModal';
-import { heroesAPI, Hero as APIHero } from '@/lib/api';
+import { heroesAPI, monumentsAPI, Hero as APIHero, Monument } from '@/lib/api';
 
 type Hero = APIHero;
 
@@ -27,9 +27,12 @@ const Index = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
   const [showHeroDetail, setShowHeroDetail] = useState(false);
+  const [monuments, setMonuments] = useState<Monument[]>([]);
+  const [selectedMonumentImage, setSelectedMonumentImage] = useState<string | null>(null);
 
   useEffect(() => {
     loadHeroes();
+    loadMonuments();
   }, []);
 
   const loadHeroes = async () => {
@@ -41,6 +44,15 @@ const Index = () => {
       console.error('Failed to load heroes:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMonuments = async () => {
+    try {
+      const data = await monumentsAPI.getAll();
+      setMonuments(data);
+    } catch (error) {
+      console.error('Failed to load monuments:', error);
     }
   };
 
@@ -355,32 +367,50 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 animate-fade-in">
-              <Icon name="Building" className="text-primary mx-auto mb-4" size={48} />
-              <h3 className="text-4xl font-bold text-primary mb-4">Монументы памяти</h3>
-              <p className="text-lg text-muted-foreground">
-                Памятники, обелиски и мемориалы Неклиновского района
-              </p>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex-1"></div>
+                <div className="flex flex-col items-center flex-1">
+                  <Icon name="Building" className="text-primary mb-4" size={48} />
+                  <h3 className="text-4xl font-bold text-primary mb-2">Монументы памяти</h3>
+                  <p className="text-lg text-muted-foreground">
+                    Памятники, обелиски и мемориалы Неклиновского района
+                  </p>
+                </div>
+                <div className="flex-1 flex justify-end">
+                  {authToken && (
+                    <Button
+                      onClick={() => navigate('/monuments/admin')}
+                      size="lg"
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Icon name="Settings" size={20} />
+                      Управление
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
                   title: 'Памятники',
-                  count: 24,
+                  count: monuments.filter(m => m.type === 'памятник').length,
                   icon: 'Monument',
                   description: 'Памятники героям ВОВ установлены в населенных пунктах района',
                   color: 'primary'
                 },
                 {
                   title: 'Обелиски',
-                  count: 15,
+                  count: monuments.filter(m => m.type === 'обелиск').length,
                   icon: 'Milestone',
                   description: 'Обелиски на местах боевых действий и братских могил',
                   color: 'secondary'
                 },
                 {
                   title: 'Мемориалы',
-                  count: 8,
+                  count: monuments.filter(m => m.type === 'мемориал').length,
                   icon: 'Building2',
                   description: 'Мемориальные комплексы с именами павших защитников',
                   color: 'primary'
@@ -408,41 +438,31 @@ const Index = () => {
             </div>
 
             <div className="mt-12 grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  image: 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/fadd452a-fccd-4b16-9ffa-4c038632544a.jpg',
-                  title: 'Обелиск памяти',
-                  location: 'с. Покровское'
-                },
-                {
-                  image: 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/cc1bdb11-5947-4196-a568-0a0de3d40d53.jpg',
-                  title: 'Мемориальный комплекс',
-                  location: 'с. Неклиновское'
-                },
-                {
-                  image: 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/dc1074af-4980-4ec6-b062-dbb24fc652c1.jpg',
-                  title: 'Памятник павшим',
-                  location: 'с. Веселое'
-                }
-              ].map((monument, i) => (
+              {monuments.slice(0, 3).map((monument, i) => (
                 <Card 
-                  key={i} 
-                  className="overflow-hidden bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all hover:scale-105 animate-fade-in group"
+                  key={monument.id} 
+                  className="overflow-hidden bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all hover:scale-105 animate-fade-in group cursor-pointer"
                   style={{ animationDelay: `${i * 0.1}s` }}
+                  onClick={() => setSelectedMonumentImage(monument.imageUrl || 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/fadd452a-fccd-4b16-9ffa-4c038632544a.jpg')}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img 
-                      src={monument.image} 
-                      alt={monument.title}
+                      src={monument.imageUrl || 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/fadd452a-fccd-4b16-9ffa-4c038632544a.jpg'} 
+                      alt={monument.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                      <h4 className="font-bold text-lg mb-1">{monument.title}</h4>
+                      <h4 className="font-bold text-lg mb-1">{monument.name}</h4>
                       <p className="text-sm flex items-center gap-1 opacity-90">
                         <Icon name="MapPin" size={14} />
-                        {monument.location}
+                        {monument.settlement}
                       </p>
+                    </div>
+                    <div className="absolute top-3 right-3">
+                      <Badge variant="secondary" className="bg-black/40 backdrop-blur-sm text-white border-white/20">
+                        {monument.type}
+                      </Badge>
                     </div>
                   </div>
                 </Card>
@@ -461,7 +481,7 @@ const Index = () => {
                   <div className="flex flex-col gap-3">
                     <Badge variant="outline" className="text-base px-4 py-2">
                       <Icon name="MapPin" className="mr-2" size={16} />
-                      47 объектов всего
+                      {monuments.length} объектов всего
                     </Badge>
                     <Badge variant="outline" className="text-base px-4 py-2">
                       <Icon name="Users" className="mr-2" size={16} />
@@ -486,6 +506,30 @@ const Index = () => {
         open={showHeroDetail}
         onClose={() => setShowHeroDetail(false)}
       />
+
+      {selectedMonumentImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-fade-in"
+          onClick={() => setSelectedMonumentImage(null)}
+        >
+          <div className="relative max-w-6xl w-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -top-12 right-0 text-white hover:bg-white/10"
+              onClick={() => setSelectedMonumentImage(null)}
+            >
+              <Icon name="X" size={24} />
+            </Button>
+            <img 
+              src={selectedMonumentImage} 
+              alt="Монумент"
+              className="w-full h-auto rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
 
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4">
