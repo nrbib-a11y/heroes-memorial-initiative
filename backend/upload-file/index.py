@@ -17,7 +17,7 @@ def get_s3_client():
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Загрузка фотографий и документов героев в S3 хранилище
+    Business: Загрузка фотографий и документов в S3 хранилище
     Args: event с httpMethod, body (base64 файл, filename, contentType)
     Returns: JSON с URL загруженного файла
     '''
@@ -32,14 +32,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token',
                 'Access-Control-Max-Age': '86400'
             },
-            'body': ''
+            'body': '',
+            'isBase64Encoded': False
         }
     
     if method != 'POST':
         return {
             'statusCode': 405,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'Method not allowed'})
+            'body': json.dumps({'error': 'Method not allowed'}),
+            'isBase64Encoded': False
         }
     
     try:
@@ -54,7 +56,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             return {
                 'statusCode': 400,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'File data is required'})
+                'body': json.dumps({'error': 'File data is required'}),
+                'isBase64Encoded': False
             }
         
         file_bytes = base64.b64decode(file_data)
@@ -82,12 +85,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'url': file_url,
                 'filename': unique_filename,
                 'message': 'File uploaded successfully'
-            })
+            }),
+            'isBase64Encoded': False
         }
     
     except Exception as e:
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': f'Upload failed: {str(e)}'})
+            'body': json.dumps({'error': f'Upload failed: {str(e)}'}),
+            'isBase64Encoded': False
         }

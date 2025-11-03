@@ -1,5 +1,6 @@
 const HEROES_API_URL = 'https://functions.poehali.dev/1c7b2c09-4c55-4269-9476-1a0477fdfc6d';
 const MONUMENTS_API_URL = 'https://functions.poehali.dev/bf2e58b3-4260-40d2-a08e-9b97ce17b190';
+const UPLOAD_API_URL = 'https://functions.poehali.dev/b076a2f8-a2c0-45ae-ad4b-74958a2cf7de';
 
 export interface Hero {
   id: number;
@@ -122,5 +123,43 @@ export const monumentsAPI = {
     });
     if (!response.ok) throw new Error('Failed to delete monument');
     return response.json();
+  },
+};
+
+export const uploadAPI = {
+  async uploadFile(file: File, folder: string = 'monuments'): Promise<{ url: string; filename: string }> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = async () => {
+        try {
+          const base64Data = (reader.result as string).split(',')[1];
+          
+          const response = await fetch(UPLOAD_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file: base64Data,
+              filename: file.name,
+              contentType: file.type,
+              folder: folder,
+            }),
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to upload file');
+          }
+          
+          const data = await response.json();
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
   },
 };

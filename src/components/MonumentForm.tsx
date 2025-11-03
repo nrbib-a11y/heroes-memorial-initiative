@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
-import { Monument } from '@/lib/api';
+import { Monument, uploadAPI } from '@/lib/api';
 
 interface MonumentFormProps {
   monument?: Monument | null;
@@ -14,6 +14,8 @@ interface MonumentFormProps {
 }
 
 export default function MonumentForm({ monument, onSave, onCancel }: MonumentFormProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: monument?.name || '',
     type: monument?.type || 'памятник',
@@ -45,6 +47,27 @@ export default function MonumentForm({ monument, onSave, onCancel }: MonumentFor
       });
     }
   }, [monument]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Пожалуйста, выберите изображение');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const result = await uploadAPI.uploadFile(file, 'monuments');
+      setFormData({ ...formData, imageUrl: result.url });
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Не удалось загрузить файл');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,13 +202,53 @@ export default function MonumentForm({ monument, onSave, onCancel }: MonumentFor
         </div>
 
         <div>
-          <Label htmlFor="imageUrl">URL изображения</Label>
-          <Input
-            id="imageUrl"
-            value={formData.imageUrl}
-            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-            placeholder="https://..."
-          />
+          <Label htmlFor="imageUrl">Фотография монумента</Label>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <Input
+                id="imageUrl"
+                value={formData.imageUrl}
+                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                placeholder="https://... или загрузите файл"
+                className="flex-1"
+              />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="gap-2"
+              >
+                {uploading ? (
+                  <>
+                    <Icon name="Loader2" className="animate-spin" size={16} />
+                    Загрузка...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Upload" size={16} />
+                    Загрузить
+                  </>
+                )}
+              </Button>
+            </div>
+            {formData.imageUrl && (
+              <div className="relative aspect-video w-full max-w-md rounded-lg overflow-hidden border border-primary/20">
+                <img 
+                  src={formData.imageUrl} 
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         <div>
