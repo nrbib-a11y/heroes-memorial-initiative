@@ -407,6 +407,48 @@ const Index = () => {
               ))}
             </div>
 
+            <div className="mt-12 grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  image: 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/fadd452a-fccd-4b16-9ffa-4c038632544a.jpg',
+                  title: 'Обелиск памяти',
+                  location: 'с. Покровское'
+                },
+                {
+                  image: 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/cc1bdb11-5947-4196-a568-0a0de3d40d53.jpg',
+                  title: 'Мемориальный комплекс',
+                  location: 'с. Неклиновское'
+                },
+                {
+                  image: 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/dc1074af-4980-4ec6-b062-dbb24fc652c1.jpg',
+                  title: 'Памятник павшим',
+                  location: 'с. Веселое'
+                }
+              ].map((monument, i) => (
+                <Card 
+                  key={i} 
+                  className="overflow-hidden bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all hover:scale-105 animate-fade-in group"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img 
+                      src={monument.image} 
+                      alt={monument.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h4 className="font-bold text-lg mb-1">{monument.title}</h4>
+                      <p className="text-sm flex items-center gap-1 opacity-90">
+                        <Icon name="MapPin" size={14} />
+                        {monument.location}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
             <div className="mt-12 text-center">
               <Card className="p-8 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20 animate-fade-in">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
