@@ -130,6 +130,7 @@ const Index = () => {
               <nav className="hidden md:flex gap-6">
                 <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
                 <button onClick={() => navigate('/map')} className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</button>
+                <a href="#monuments" className="text-sm font-medium hover:text-primary transition-colors">Монументы</a>
                 <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
               </nav>
               
@@ -345,6 +346,88 @@ const Index = () => {
                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </Card>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="monuments" className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12 animate-fade-in">
+              <Icon name="Building" className="text-primary mx-auto mb-4" size={48} />
+              <h3 className="text-4xl font-bold text-primary mb-4">Монументы памяти</h3>
+              <p className="text-lg text-muted-foreground">
+                Памятники, обелиски и мемориалы Неклиновского района
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  title: 'Памятники',
+                  count: 24,
+                  icon: 'Monument',
+                  description: 'Памятники героям ВОВ установлены в населенных пунктах района',
+                  color: 'primary'
+                },
+                {
+                  title: 'Обелиски',
+                  count: 15,
+                  icon: 'Milestone',
+                  description: 'Обелиски на местах боевых действий и братских могил',
+                  color: 'secondary'
+                },
+                {
+                  title: 'Мемориалы',
+                  count: 8,
+                  icon: 'Building2',
+                  description: 'Мемориальные комплексы с именами павших защитников',
+                  color: 'primary'
+                },
+              ].map((monument, i) => (
+                <Card 
+                  key={i} 
+                  className="p-8 bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all hover:scale-105 animate-scale-in group"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <Icon name={monument.icon as any} className="text-primary" size={40} />
+                    </div>
+                    <div>
+                      <div className="text-5xl font-bold text-primary mb-2">{monument.count}</div>
+                      <h4 className="text-xl font-bold text-foreground mb-3">{monument.title}</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {monument.description}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            <div className="mt-12 text-center">
+              <Card className="p-8 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20 animate-fade-in">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="text-left flex-1">
+                    <h4 className="text-2xl font-bold text-primary mb-2">Вечная память героям</h4>
+                    <p className="text-muted-foreground">
+                      На всех монументах увековечены имена защитников Отечества. Мы работаем над систематизацией и оцифровкой данных со всех мемориалов района.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <Badge variant="outline" className="text-base px-4 py-2">
+                      <Icon name="MapPin" className="mr-2" size={16} />
+                      47 объектов всего
+                    </Badge>
+                    <Badge variant="outline" className="text-base px-4 py-2">
+                      <Icon name="Users" className="mr-2" size={16} />
+                      Более 5000 имен
+                    </Badge>
+                  </div>
+                </div>
+              </Card>
             </div>
           </div>
         </div>
