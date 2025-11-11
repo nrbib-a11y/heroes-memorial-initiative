@@ -158,12 +158,11 @@ const Index = () => {
         </div>
       </footer>
 
-      {showLoginModal && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-          onLogin={handleLogin}
-        />
-      )}
+      <LoginModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleLogin}
+      />
 
       {showHeroDetail && selectedHero && (
         <HeroDetailModal
