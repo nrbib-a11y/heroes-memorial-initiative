@@ -154,9 +154,7 @@ const Index = () => {
       <footer className="border-t border-primary/20 py-8 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              © 2024 Память Неклиновского района. Все права защищены.
-            </p>
+            <p className="text-sm text-muted-foreground">© 2025 Память Неклиновского района. Все права защищены.</p>
             <div className="flex gap-6">
               <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Политика конфиденциальности
