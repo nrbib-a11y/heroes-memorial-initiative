@@ -30,7 +30,7 @@ export default function PageHeader({ authToken, userLogin, onShowLoginModal, onL
             <nav className="hidden md:flex gap-6">
               <a href="#database" className="text-sm font-medium hover:text-primary transition-colors">База данных</a>
               <button onClick={() => navigate('/map')} className="text-sm font-medium hover:text-primary transition-colors">Карта памяти</button>
-              <button onClick={() => navigate('/monuments')} className="text-sm font-medium hover:text-primary transition-colors">Монументы</button>
+              <a href="#monuments" className="text-sm font-medium hover:text-primary transition-colors">Монументы</a>
               <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">О проекте</a>
             </nav>
             
