@@ -2,11 +2,10 @@ import { useState, useEffect } from 'react';
 import PageHeader from '@/components/index/PageHeader';
 import HeroSection from '@/components/index/HeroSection';
 import HeroesDatabase from '@/components/index/HeroesDatabase';
-import MonumentsSection from '@/components/index/MonumentsSection';
 import LoginModal from '@/components/LoginModal';
 import HeroDetailModal from '@/components/HeroDetailModal';
 import Icon from '@/components/ui/icon';
-import { heroesAPI, monumentsAPI, Hero as APIHero, Monument } from '@/lib/api';
+import { heroesAPI, Hero as APIHero } from '@/lib/api';
 
 type Hero = APIHero;
 
@@ -19,12 +18,9 @@ const Index = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
   const [showHeroDetail, setShowHeroDetail] = useState(false);
-  const [monuments, setMonuments] = useState<Monument[]>([]);
-  const [selectedMonumentImage, setSelectedMonumentImage] = useState<string | null>(null);
 
   useEffect(() => {
     loadHeroes();
-    loadMonuments();
   }, []);
 
   const loadHeroes = async () => {
@@ -39,14 +35,7 @@ const Index = () => {
     }
   };
 
-  const loadMonuments = async () => {
-    try {
-      const data = await monumentsAPI.getAll();
-      setMonuments(data);
-    } catch (error) {
-      console.error('Failed to load monuments:', error);
-    }
-  };
+
 
   const handleUpdateHero = async (updatedHero: Hero) => {
     try {
@@ -126,13 +115,6 @@ const Index = () => {
         onUpdateHero={handleUpdateHero}
         onDeleteHero={handleDeleteHero}
         onHeroClick={handleHeroClick}
-      />
-
-      <MonumentsSection
-        monuments={monuments}
-        authToken={authToken}
-        selectedMonumentImage={selectedMonumentImage}
-        onSelectMonumentImage={setSelectedMonumentImage}
       />
 
       <section id="about" className="py-20 bg-background">
