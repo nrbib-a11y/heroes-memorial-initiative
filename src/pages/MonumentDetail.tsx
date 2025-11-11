@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
-import Navigation from '@/components/Navigation';
 import { Monument, monumentsAPI } from '@/lib/api';
 
 export default function MonumentDetail() {
@@ -31,7 +30,6 @@ export default function MonumentDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation />
         <div className="container mx-auto px-4 py-20 text-center">
           <p className="text-muted-foreground">Загрузка...</p>
         </div>
@@ -42,7 +40,6 @@ export default function MonumentDetail() {
   if (!monument) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold mb-4">Монумент не найден</h1>
           <Button onClick={() => navigate('/map')}>
@@ -56,8 +53,6 @@ export default function MonumentDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Button 
           variant="ghost" 
