@@ -1,20 +1,96 @@
 import React from 'react';
-import * as LucideIcons from 'lucide-react';
-import { LucideProps } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Building,
+  Calendar,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  CircleAlert,
+  Edit,
+  FileText,
+  Flame,
+  Heart,
+  Image,
+  Info,
+  Loader2,
+  Lock,
+  LogIn,
+  LogOut,
+  Mail,
+  Map,
+  MapPin,
+  MessageSquare,
+  Paperclip,
+  Phone,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  Shield,
+  Star,
+  Trash2,
+  Upload,
+  User,
+  Users,
+  X,
+  LucideProps,
+} from 'lucide-react';
 
 interface IconProps extends LucideProps {
   name: string;
   fallback?: string;
 }
 
+const iconMap: Record<string, React.FC<LucideProps>> = {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Building,
+  Calendar,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  CircleAlert,
+  Edit,
+  FileText,
+  Flame,
+  Heart,
+  Image,
+  Info,
+  Loader2,
+  Lock,
+  LogIn,
+  LogOut,
+  Mail,
+  Map,
+  MapPin,
+  MessageSquare,
+  Paperclip,
+  Phone,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  Shield,
+  Star,
+  Trash2,
+  Upload,
+  User,
+  Users,
+  X,
+};
+
 const Icon: React.FC<IconProps> = ({ name, fallback = 'CircleAlert', ...props }) => {
-  const IconComponent = (LucideIcons as Record<string, React.FC<LucideProps>>)[name];
+  const IconComponent = iconMap[name];
 
   if (!IconComponent) {
-    // Если иконка не найдена, используем fallback иконку
-    const FallbackIcon = (LucideIcons as Record<string, React.FC<LucideProps>>)[fallback];
+    const FallbackIcon = iconMap[fallback];
 
-    // Если даже fallback не найден, возвращаем пустой span
     if (!FallbackIcon) {
       return <span className="text-xs text-gray-400">[icon]</span>;
     }

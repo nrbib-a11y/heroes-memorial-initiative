@@ -8,6 +8,7 @@ import Icon from '@/components/ui/icon';
 import { Hero as APIHero } from '@/lib/api';
 import { useHeroes, useCreateHero, useUpdateHero, useDeleteHero } from '@/hooks/useHeroes';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 type Hero = APIHero;
 
@@ -17,10 +18,9 @@ const Index = () => {
   const updateHeroMutation = useUpdateHero();
   const deleteHeroMutation = useDeleteHero();
   const { toast } = useToast();
+  const { authToken, userLogin, login, logout } = useAuth();
   
   const [isAddingHero, setIsAddingHero] = useState(false);
-  const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
-  const [userLogin, setUserLogin] = useState<string | null>(localStorage.getItem('userLogin'));
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
   const [showHeroDetail, setShowHeroDetail] = useState(false);
@@ -79,18 +79,8 @@ const Index = () => {
     }
   };
 
-  const handleLogin = (token: string, login: string) => {
-    setAuthToken(token);
-    setUserLogin(login);
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userLogin', login);
-  };
-
-  const handleLogout = () => {
-    setAuthToken(null);
-    setUserLogin(null);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userLogin');
+  const handleLogin = (token: string, loginName: string) => {
+    login(token, loginName);
   };
 
   const handleHeroClick = (hero: Hero) => {
@@ -111,7 +101,7 @@ const Index = () => {
         authToken={authToken}
         userLogin={userLogin}
         onShowLoginModal={() => setShowLoginModal(true)}
-        onLogout={handleLogout}
+        onLogout={logout}
       />
 
       <HeroSection stats={stats} />
