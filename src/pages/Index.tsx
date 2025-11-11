@@ -5,6 +5,7 @@ import HeroesDatabase from '@/components/index/HeroesDatabase';
 import MonumentsSection from '@/components/index/MonumentsSection';
 import LoginModal from '@/components/LoginModal';
 import HeroDetailModal from '@/components/HeroDetailModal';
+import Icon from '@/components/ui/icon';
 import { heroesAPI, monumentsAPI, Hero as APIHero, Monument } from '@/lib/api';
 
 type Hero = APIHero;
