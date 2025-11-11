@@ -546,9 +546,7 @@ const Index = () => {
               <a href="#" className="text-primary hover:underline">Как помочь</a>
               <a href="#" className="text-primary hover:underline">Документы</a>
             </div>
-            <p className="text-xs text-muted-foreground pt-4">
-              © 2024 Память Народа. Все герои достойны памяти.
-            </p>
+            <p className="text-xs text-muted-foreground pt-4">© 2025 Память Народа. Все герои достойны памяти.</p>
           </div>
         </div>
       </footer>
