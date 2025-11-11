@@ -27,7 +27,7 @@ export default function FileUploadSection({ heroId, authToken, onFileUploaded, o
     try {
       setLoading(true);
       const response = await fetch(
-        `https://functions.poehali.dev/b076a2f8-a2c0-45ae-ad4b-74958a2cf7de?hero_id=${heroId}`
+        `https://functions.poehali.dev/5b374262-df50-4d0c-a58d-7670e30be3c1?hero_id=${heroId}`
       );
       const data = await response.json();
       setFiles(data);
@@ -49,7 +49,7 @@ export default function FileUploadSection({ heroId, authToken, onFileUploaded, o
       reader.onload = async () => {
         const base64Data = reader.result as string;
         
-        const response = await fetch('https://functions.poehali.dev/b076a2f8-a2c0-45ae-ad4b-74958a2cf7de', {
+        const response = await fetch('https://functions.poehali.dev/5b374262-df50-4d0c-a58d-7670e30be3c1', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export default function FileUploadSection({ heroId, authToken, onFileUploaded, o
 
     try {
       const response = await fetch(
-        `https://functions.poehali.dev/b076a2f8-a2c0-45ae-ad4b-74958a2cf7de?id=${fileId}`,
+        `https://functions.poehali.dev/5b374262-df50-4d0c-a58d-7670e30be3c1?id=${fileId}`,
         {
           method: 'DELETE',
           headers: {

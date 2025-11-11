@@ -57,7 +57,7 @@ const HeroCard = ({ hero, onUpdate, onDelete, isEditable = false, authToken, onN
       setLoadingPhoto(true);
       setLoadingDocs(true);
       const response = await fetch(
-        `https://functions.poehali.dev/b076a2f8-a2c0-45ae-ad4b-74958a2cf7de?hero_id=${hero.id}`
+        `https://functions.poehali.dev/5b374262-df50-4d0c-a58d-7670e30be3c1?hero_id=${hero.id}`
       );
       const files = await response.json();
       const photo = files.find((f: any) => f.file_type === 'photo');
