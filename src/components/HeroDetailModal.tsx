@@ -30,11 +30,12 @@ interface HeroDetailModalProps {
 }
 
 export default function HeroDetailModal({ hero, open, onClose, isEditable = false, authToken, onUpdate }: HeroDetailModalProps) {
-  const [heroPhoto, setHeroPhoto] = useState<string | null>(null);
+  const [heroPhotos, setHeroPhotos] = useState<any[]>([]);
   const [heroDocuments, setHeroDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedHero, setEditedHero] = useState<Hero | null>(hero);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
   useEffect(() => {
     if (hero && open) {
@@ -49,15 +50,11 @@ export default function HeroDetailModal({ hero, open, onClose, isEditable = fals
     try {
       setLoading(true);
       const response = await fetch(
-        `https://functions.poehali.dev/5b374262-df50-4d0c-a58d-7670e30be3c1?hero_id=${hero.id}`
+        `https://functions.poehali.dev/b076a2f8-a2c0-45ae-ad4b-74958a2cf7de?hero_id=${hero.id}`
       );
       const files = await response.json();
-      const photo = files.find((f: any) => f.file_type === 'photo');
-      if (photo?.file_data) {
-        setHeroPhoto(photo.file_data);
-      } else {
-        setHeroPhoto(null);
-      }
+      const photos = files.filter((f: any) => f.file_type === 'photo');
+      setHeroPhotos(photos);
       const documents = files.filter((f: any) => f.file_type === 'document');
       setHeroDocuments(documents);
     } catch (error) {
@@ -130,13 +127,36 @@ export default function HeroDetailModal({ hero, open, onClose, isEditable = fals
         </DialogHeader>
 
         <div className="space-y-6">
-          {heroPhoto && (
-            <div className="flex justify-center">
-              <img
-                src={heroPhoto}
-                alt={hero.name}
-                className="w-48 h-48 rounded-lg object-cover border-4 border-primary/30 shadow-lg"
-              />
+          {heroPhotos.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex justify-center">
+                <img
+                  src={heroPhotos[selectedPhotoIndex].file_data}
+                  alt={hero.name}
+                  className="w-64 h-64 rounded-lg object-cover border-4 border-primary/30 shadow-lg"
+                />
+              </div>
+              {heroPhotos.length > 1 && (
+                <div className="flex justify-center gap-2">
+                  {heroPhotos.map((photo, idx) => (
+                    <button
+                      key={photo.id}
+                      onClick={() => setSelectedPhotoIndex(idx)}
+                      className={`w-16 h-16 rounded border-2 overflow-hidden transition-all ${
+                        idx === selectedPhotoIndex 
+                          ? 'border-primary ring-2 ring-primary/50' 
+                          : 'border-primary/30 hover:border-primary/60'
+                      }`}
+                    >
+                      <img
+                        src={photo.file_data}
+                        alt={`${hero.name} ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
