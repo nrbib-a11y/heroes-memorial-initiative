@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/ui/icon';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Icon from "@/components/ui/icon";
 
 interface Region {
   id: number;
@@ -15,12 +15,46 @@ interface Region {
 }
 
 const regions: Region[] = [
-  { id: 1, name: 'с. Покровское', heroes: 1245, found: 834, missing: 411, coordinates: { x: 50, y: 50 } },
-  { id: 2, name: 'с. Неклиновское', heroes: 987, found: 623, missing: 364, coordinates: { x: 45, y: 48 } },
-  { id: 3, name: 'с. Веселое', heroes: 756, found: 512, missing: 244, coordinates: { x: 55, y: 52 } },
-  { id: 4, name: 'с. Рождественка', heroes: 623, found: 421, missing: 202, coordinates: { x: 48, y: 45 } },
-  { id: 5, name: 'с. Вареновка', heroes: 543, found: 367, missing: 176, coordinates: { x: 52, y: 55 } },
-  { id: 6, name: 'п. Приморка', heroes: 667, found: 488, missing: 179, coordinates: { x: 58, y: 48 } },
+  {
+    id: 1,
+    name: "с. Покровское",
+    heroes: 1245,
+    found: 834,
+    missing: 411,
+    coordinates: { x: 50, y: 50 },
+  },
+  {
+    id: 2,
+    name: "с. Николаевка",
+    heroes: 987,
+    found: 623,
+    missing: 364,
+    coordinates: { x: 45, y: 48 },
+  },
+  {
+    id: 3,
+    name: "с. Веселое",
+    heroes: 756,
+    found: 512,
+    missing: 244,
+    coordinates: { x: 55, y: 52 },
+  },
+  {
+    id: 5,
+    name: "с. Вареновка",
+    heroes: 543,
+    found: 367,
+    missing: 176,
+    coordinates: { x: 52, y: 55 },
+  },
+  {
+    id: 6,
+    name: "п. Приморка",
+    heroes: 667,
+    found: 488,
+    missing: 179,
+    coordinates: { x: 58, y: 48 },
+  },
 ];
 
 const Map = () => {
@@ -37,18 +71,26 @@ const Map = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
                 className="gap-2"
               >
                 <Icon name="ArrowLeft" size={16} />
                 Назад
               </Button>
               <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                <Icon name="Map" className="text-primary-foreground" size={24} />
+                <Icon
+                  name="Map"
+                  className="text-primary-foreground"
+                  size={24}
+                />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-primary">Карта памяти</h1>
-                <p className="text-sm text-muted-foreground">Неклиновский район</p>
+                <h1 className="text-3xl font-bold text-primary">
+                  Карта памяти
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Неклиновский район
+                </p>
               </div>
             </div>
           </div>
@@ -59,7 +101,9 @@ const Map = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 animate-fade-in">
-              <h2 className="text-4xl font-bold text-primary mb-4">Интерактивная карта населенных пунктов</h2>
+              <h2 className="text-4xl font-bold text-primary mb-4">
+                Интерактивная карта населенных пунктов
+              </h2>
               <p className="text-lg text-muted-foreground">
                 Выберите населенный пункт на карте для просмотра статистики
               </p>
@@ -71,8 +115,19 @@ const Map = () => {
                   <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg overflow-hidden">
                     <svg viewBox="0 0 100 100" className="w-full h-full">
                       <defs>
-                        <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="0.2" className="text-primary/10" />
+                        <pattern
+                          id="grid"
+                          width="10"
+                          height="10"
+                          patternUnits="userSpaceOnUse"
+                        >
+                          <path
+                            d="M 10 0 L 0 0 0 10"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="0.2"
+                            className="text-primary/10"
+                          />
                         </pattern>
                       </defs>
                       <rect width="100" height="100" fill="url(#grid)" />
@@ -91,10 +146,10 @@ const Map = () => {
                             r={hoveredRegion === region.id ? "3" : "2.5"}
                             className={`transition-all ${
                               selectedRegion?.id === region.id
-                                ? 'fill-primary stroke-primary-foreground'
+                                ? "fill-primary stroke-primary-foreground"
                                 : hoveredRegion === region.id
-                                ? 'fill-secondary stroke-secondary-foreground'
-                                : 'fill-primary/50 stroke-primary'
+                                  ? "fill-secondary stroke-secondary-foreground"
+                                  : "fill-primary/50 stroke-primary"
                             }`}
                             strokeWidth="0.5"
                           />
@@ -116,7 +171,9 @@ const Map = () => {
                 {selectedRegion ? (
                   <Card className="p-6 bg-card/90 backdrop-blur-sm border-primary/20 animate-scale-in">
                     <div className="flex items-start justify-between mb-4">
-                      <h4 className="text-xl font-bold text-primary">{selectedRegion.name}</h4>
+                      <h4 className="text-xl font-bold text-primary">
+                        {selectedRegion.name}
+                      </h4>
                       <Badge variant="secondary" className="bg-secondary/20">
                         <Icon name="MapPin" size={12} className="mr-1" />
                         Регион
@@ -126,7 +183,7 @@ const Map = () => {
                     <div className="space-y-4">
                       <div className="p-4 rounded-lg bg-muted/30 border border-primary/10">
                         <div className="text-3xl font-bold text-primary mb-1">
-                          {selectedRegion.heroes.toLocaleString('ru-RU')}
+                          {selectedRegion.heroes.toLocaleString("ru-RU")}
                         </div>
                         <div className="text-sm text-muted-foreground flex items-center gap-1">
                           <Icon name="Users" size={14} />
@@ -137,7 +194,7 @@ const Map = () => {
                       <div className="grid grid-cols-2 gap-3">
                         <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
                           <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
-                            {selectedRegion.found.toLocaleString('ru-RU')}
+                            {selectedRegion.found.toLocaleString("ru-RU")}
                           </div>
                           <div className="text-xs text-muted-foreground flex items-center gap-1">
                             <Icon name="CheckCircle2" size={12} />
@@ -147,7 +204,7 @@ const Map = () => {
 
                         <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
                           <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
-                            {selectedRegion.missing.toLocaleString('ru-RU')}
+                            {selectedRegion.missing.toLocaleString("ru-RU")}
                           </div>
                           <div className="text-xs text-muted-foreground flex items-center gap-1">
                             <Icon name="Search" size={12} />
@@ -157,15 +214,23 @@ const Map = () => {
                       </div>
 
                       <div className="pt-4 border-t border-primary/10">
-                        <div className="text-sm text-muted-foreground mb-2">Процент установленных:</div>
+                        <div className="text-sm text-muted-foreground mb-2">
+                          Процент установленных:
+                        </div>
                         <div className="w-full bg-muted/30 rounded-full h-3 overflow-hidden">
                           <div
                             className="bg-gradient-to-r from-primary to-secondary h-full transition-all duration-500 rounded-full"
-                            style={{ width: `${(selectedRegion.found / selectedRegion.heroes) * 100}%` }}
+                            style={{
+                              width: `${(selectedRegion.found / selectedRegion.heroes) * 100}%`,
+                            }}
                           ></div>
                         </div>
                         <div className="text-right text-sm font-semibold text-primary mt-1">
-                          {Math.round((selectedRegion.found / selectedRegion.heroes) * 100)}%
+                          {Math.round(
+                            (selectedRegion.found / selectedRegion.heroes) *
+                              100,
+                          )}
+                          %
                         </div>
                       </div>
                     </div>
@@ -173,9 +238,14 @@ const Map = () => {
                 ) : (
                   <Card className="p-6 bg-card/90 backdrop-blur-sm border-primary/20">
                     <div className="text-center py-8">
-                      <Icon name="MapPin" className="mx-auto text-muted-foreground mb-4" size={48} />
+                      <Icon
+                        name="MapPin"
+                        className="mx-auto text-muted-foreground mb-4"
+                        size={48}
+                      />
                       <p className="text-muted-foreground">
-                        Выберите населенный пункт на карте для просмотра статистики
+                        Выберите населенный пункт на карте для просмотра
+                        статистики
                       </p>
                     </div>
                   </Card>
@@ -188,12 +258,14 @@ const Map = () => {
                       onClick={() => setSelectedRegion(region)}
                       className={`p-3 rounded-lg cursor-pointer transition-all ${
                         selectedRegion?.id === region.id
-                          ? 'bg-primary/20 border-2 border-primary'
-                          : 'bg-card/50 border border-primary/10 hover:bg-card/80 hover:border-primary/30'
+                          ? "bg-primary/20 border-2 border-primary"
+                          : "bg-card/50 border border-primary/10 hover:bg-card/80 hover:border-primary/30"
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{region.name}</span>
+                        <span className="text-sm font-medium">
+                          {region.name}
+                        </span>
                         <Badge variant="outline" className="text-xs">
                           {region.heroes}
                         </Badge>
