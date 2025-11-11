@@ -62,7 +62,7 @@ export default function Monuments() {
               </div>
             </div>
             {authToken && (
-              <Button onClick={() => navigate('/monuments/admin')} className="gap-2">Редактирование</Button>
+              <Button onClick={() => navigate('/monuments/admin')} className="gap-2">Редактировать</Button>
             )}
           </div>
         </div>
