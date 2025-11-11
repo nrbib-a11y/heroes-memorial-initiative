@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,19 +14,9 @@ interface MonumentCardProps {
 
 export default function MonumentCard({ monument, onEdit, onDelete, isEditable }: MonumentCardProps) {
   const [showFullInfo, setShowFullInfo] = useState(false);
-  const navigate = useNavigate();
-
-  const handleCardClick = () => {
-    if (!isEditable) {
-      navigate(`/monument/${monument.id}`);
-    }
-  };
 
   return (
-    <Card 
-      className="overflow-hidden bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all cursor-pointer"
-      onClick={handleCardClick}
-    >
+    <Card className="overflow-hidden bg-card/90 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all">
       <div className="relative aspect-[16/9] overflow-hidden">
         <img 
           src={monument.imageUrl || 'https://cdn.poehali.dev/projects/a878be49-c92f-49fe-82c3-94c8b2b2a18a/files/fadd452a-fccd-4b16-9ffa-4c038632544a.jpg'} 
@@ -69,38 +58,29 @@ export default function MonumentCard({ monument, onEdit, onDelete, isEditable }:
         )}
 
         <div className="flex gap-2 pt-2">
-          {!isEditable ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowFullInfo(!showFullInfo);
-              }}
-              className="flex-1"
-            >
-              <Icon name={showFullInfo ? "ChevronUp" : "ChevronDown"} size={16} className="mr-2" />
-              {showFullInfo ? 'Скрыть' : 'Подробнее'}
-            </Button>
-          ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFullInfo(!showFullInfo)}
+            className="flex-1"
+          >
+            <Icon name={showFullInfo ? "ChevronUp" : "ChevronDown"} size={16} className="mr-2" />
+            {showFullInfo ? 'Скрыть' : 'Подробнее'}
+          </Button>
+          
+          {isEditable && (
             <>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit?.(monument);
-                }}
+                onClick={() => onEdit?.(monument)}
               >
                 <Icon name="Edit" size={16} />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete?.(monument.id);
-                }}
+                onClick={() => onDelete?.(monument.id)}
                 className="text-destructive hover:text-destructive"
               >
                 <Icon name="Trash2" size={16} />

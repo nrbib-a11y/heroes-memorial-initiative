@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import HeroProfile from "./pages/HeroProfile";
 import Map from "./pages/Map";
 import MonumentsAdmin from "./pages/MonumentsAdmin";
-import MonumentDetail from "./pages/MonumentDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,7 +22,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/hero/:id" element={<HeroProfile />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/monument/:id" element={<MonumentDetail />} />
           <Route path="/monuments/admin" element={<MonumentsAdmin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
