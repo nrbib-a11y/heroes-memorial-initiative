@@ -129,11 +129,11 @@ const Index = () => {
             <div className="flex flex-wrap justify-center gap-4 pt-6">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Icon name="Mail" size={16} className="text-primary" />
-                <span>info@neklinovsky-memory.ru</span>
+                <span></span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Icon name="Phone" size={16} className="text-primary" />
-                <span>+7 (863) 123-45-67</span>
+                <span></span>
               </div>
             </div>
           </div>
