@@ -1,70 +1,81 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PageHeader from '@/components/index/PageHeader';
 import HeroSection from '@/components/index/HeroSection';
 import HeroesDatabase from '@/components/index/HeroesDatabase';
 import LoginModal from '@/components/LoginModal';
 import HeroDetailModal from '@/components/HeroDetailModal';
 import Icon from '@/components/ui/icon';
-import { heroesAPI, Hero as APIHero } from '@/lib/api';
+import { Hero as APIHero } from '@/lib/api';
+import { useHeroes, useCreateHero, useUpdateHero, useDeleteHero } from '@/hooks/useHeroes';
+import { useToast } from '@/hooks/use-toast';
 
 type Hero = APIHero;
 
 const Index = () => {
-  const [heroes, setHeroes] = useState<Hero[]>([]);
+  const { data: heroes = [], isLoading: loading } = useHeroes();
+  const createHeroMutation = useCreateHero();
+  const updateHeroMutation = useUpdateHero();
+  const deleteHeroMutation = useDeleteHero();
+  const { toast } = useToast();
+  
   const [isAddingHero, setIsAddingHero] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
   const [userLogin, setUserLogin] = useState<string | null>(localStorage.getItem('userLogin'));
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
   const [showHeroDetail, setShowHeroDetail] = useState(false);
 
-  useEffect(() => {
-    loadHeroes();
-  }, []);
-
-  const loadHeroes = async () => {
-    try {
-      setLoading(true);
-      const data = await heroesAPI.getAll();
-      setHeroes(data);
-    } catch (error) {
-      console.error('Failed to load heroes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
 
 
   const handleUpdateHero = async (updatedHero: Hero) => {
     try {
-      await heroesAPI.update(updatedHero);
-      setHeroes(heroes.map(h => h.id === updatedHero.id ? updatedHero : h));
+      await updateHeroMutation.mutateAsync(updatedHero);
+      toast({
+        title: 'Данные обновлены',
+        description: 'Информация о герое успешно обновлена',
+      });
     } catch (error) {
       console.error('Failed to update hero:', error);
-      alert('Не удалось обновить данные');
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось обновить данные',
+        variant: 'destructive',
+      });
     }
   };
 
   const handleDeleteHero = async (id: number) => {
     try {
-      await heroesAPI.delete(id);
-      setHeroes(heroes.filter(h => h.id !== id));
+      await deleteHeroMutation.mutateAsync(id);
+      toast({
+        title: 'Герой удалён',
+        description: 'Запись успешно удалена',
+      });
     } catch (error) {
       console.error('Failed to delete hero:', error);
-      alert('Не удалось удалить героя');
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось удалить героя',
+        variant: 'destructive',
+      });
     }
   };
 
   const handleAddHero = async (newHero: Omit<Hero, 'id'>) => {
     try {
-      await heroesAPI.create(newHero);
-      await loadHeroes();
+      await createHeroMutation.mutateAsync(newHero);
       setIsAddingHero(false);
+      toast({
+        title: 'Герой добавлен',
+        description: 'Новая запись успешно создана',
+      });
     } catch (error) {
       console.error('Failed to add hero:', error);
-      alert('Не удалось добавить героя');
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось добавить героя',
+        variant: 'destructive',
+      });
     }
   };
 

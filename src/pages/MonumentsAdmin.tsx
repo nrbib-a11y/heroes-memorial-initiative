@@ -4,12 +4,18 @@ import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import MonumentCard from '@/components/MonumentCard';
 import MonumentForm from '@/components/MonumentForm';
-import { monumentsAPI, Monument } from '@/lib/api';
+import { Monument } from '@/lib/api';
+import { useMonuments, useCreateMonument, useUpdateMonument, useDeleteMonument } from '@/hooks/useMonuments';
+import { useToast } from '@/hooks/use-toast';
 
 export default function MonumentsAdmin() {
   const navigate = useNavigate();
-  const [monuments, setMonuments] = useState<Monument[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: monuments = [], isLoading: loading } = useMonuments();
+  const createMonumentMutation = useCreateMonument();
+  const updateMonumentMutation = useUpdateMonument();
+  const deleteMonumentMutation = useDeleteMonument();
+  const { toast } = useToast();
+  
   const [editingMonument, setEditingMonument] = useState<Monument | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [authToken] = useState<string | null>(localStorage.getItem('authToken'));
@@ -19,34 +25,32 @@ export default function MonumentsAdmin() {
       navigate('/');
       return;
     }
-    loadMonuments();
   }, [authToken, navigate]);
-
-  const loadMonuments = async () => {
-    try {
-      setLoading(true);
-      const data = await monumentsAPI.getAll();
-      setMonuments(data);
-    } catch (error) {
-      console.error('Failed to load monuments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSave = async (monument: Monument | Omit<Monument, 'id'>) => {
     try {
       if ('id' in monument) {
-        await monumentsAPI.update(monument);
+        await updateMonumentMutation.mutateAsync(monument);
+        toast({
+          title: 'Монумент обновлён',
+          description: 'Изменения успешно сохранены',
+        });
       } else {
-        await monumentsAPI.create(monument);
+        await createMonumentMutation.mutateAsync(monument);
+        toast({
+          title: 'Монумент добавлен',
+          description: 'Новый монумент успешно создан',
+        });
       }
-      await loadMonuments();
       setEditingMonument(null);
       setIsAdding(false);
     } catch (error) {
       console.error('Failed to save monument:', error);
-      alert('Не удалось сохранить монумент');
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось сохранить монумент',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -54,11 +58,18 @@ export default function MonumentsAdmin() {
     if (!confirm('Вы уверены, что хотите удалить этот монумент?')) return;
     
     try {
-      await monumentsAPI.delete(id);
-      await loadMonuments();
+      await deleteMonumentMutation.mutateAsync(id);
+      toast({
+        title: 'Монумент удалён',
+        description: 'Запись успешно удалена',
+      });
     } catch (error) {
       console.error('Failed to delete monument:', error);
-      alert('Не удалось удалить монумент');
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось удалить монумент',
+        variant: 'destructive',
+      });
     }
   };
 

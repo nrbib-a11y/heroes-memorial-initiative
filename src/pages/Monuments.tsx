@@ -1,35 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import MonumentCard from '@/components/MonumentCard';
-import { Monument, monumentsAPI } from '@/lib/api';
+import { useMonuments } from '@/hooks/useMonuments';
 
 export default function Monuments() {
   const navigate = useNavigate();
-  const [monuments, setMonuments] = useState<Monument[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: monuments = [], isLoading: loading } = useMonuments();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('');
   const authToken = localStorage.getItem('authToken');
-
-  useEffect(() => {
-    loadMonuments();
-  }, []);
-
-  const loadMonuments = async () => {
-    try {
-      setLoading(true);
-      const data = await monumentsAPI.getAll();
-      setMonuments(data);
-    } catch (error) {
-      console.error('Failed to load monuments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredMonuments = monuments.filter((monument) => {
     const matchesSearch = monument.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
