@@ -164,15 +164,14 @@ const Index = () => {
         onLogin={handleLogin}
       />
 
-      {showHeroDetail && selectedHero && (
-        <HeroDetailModal
-          hero={selectedHero}
-          onClose={() => {
-            setShowHeroDetail(false);
-            setSelectedHero(null);
-          }}
-        />
-      )}
+      <HeroDetailModal
+        hero={selectedHero}
+        open={showHeroDetail}
+        onClose={() => {
+          setShowHeroDetail(false);
+          setSelectedHero(null);
+        }}
+      />
     </div>
   );
 };
