@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
+import FileUploadSection from './FileUploadSection';
 
 interface Hero {
   id: number;
@@ -20,15 +24,21 @@ interface HeroDetailModalProps {
   hero: Hero | null;
   open: boolean;
   onClose: () => void;
+  isEditable?: boolean;
+  authToken?: string | null;
+  onUpdate?: (hero: Hero) => void;
 }
 
-export default function HeroDetailModal({ hero, open, onClose }: HeroDetailModalProps) {
+export default function HeroDetailModal({ hero, open, onClose, isEditable = false, authToken, onUpdate }: HeroDetailModalProps) {
   const [heroPhoto, setHeroPhoto] = useState<string | null>(null);
   const [heroDocuments, setHeroDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedHero, setEditedHero] = useState<Hero | null>(hero);
 
   useEffect(() => {
     if (hero && open) {
+      setEditedHero(hero);
       loadHeroFiles();
     }
   }, [hero, open]);
@@ -57,15 +67,65 @@ export default function HeroDetailModal({ hero, open, onClose }: HeroDetailModal
     }
   };
 
-  if (!hero) return null;
+  if (!hero || !editedHero) return null;
+
+  const handleSave = async () => {
+    if (!authToken || !onUpdate) return;
+    
+    try {
+      const response = await fetch(
+        `https://functions.poehali.dev/20c21f09-cd9b-4f71-9f25-5c50e9c53ad4`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': authToken,
+          },
+          body: JSON.stringify(editedHero),
+        }
+      );
+      
+      if (response.ok) {
+        onUpdate(editedHero);
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error('Failed to update hero:', error);
+    }
+  };
+
+  const handleAwardsChange = (value: string) => {
+    const awardsArray = value.split('\n').filter(a => a.trim());
+    setEditedHero({ ...editedHero, awards: awardsArray });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-2xl">
-            <Icon name="Star" size={24} className="text-primary" />
-            {hero.name}
+          <DialogTitle className="flex items-center justify-between text-2xl">
+            <div className="flex items-center gap-3">
+              <Icon name="Star" size={24} className="text-primary" />
+              {isEditing ? 'Редактирование героя' : hero.name}
+            </div>
+            {isEditable && authToken && !isEditing && (
+              <Button onClick={() => setIsEditing(true)} size="sm" variant="outline">
+                <Icon name="Edit" size={16} className="mr-2" />
+                Редактировать
+              </Button>
+            )}
+            {isEditing && (
+              <div className="flex gap-2">
+                <Button onClick={handleSave} size="sm" variant="default">
+                  <Icon name="Check" size={16} className="mr-1" />
+                  Сохранить
+                </Button>
+                <Button onClick={() => { setIsEditing(false); setEditedHero(hero); }} size="sm" variant="outline">
+                  <Icon name="X" size={16} className="mr-1" />
+                  Отмена
+                </Button>
+              </div>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -80,59 +140,150 @@ export default function HeroDetailModal({ hero, open, onClose }: HeroDetailModal
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground">Год рождения</span>
-              <p className="text-lg font-semibold">{hero.birthYear}</p>
-            </div>
-            
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground">Год смерти</span>
-              <p className="text-lg font-semibold">{hero.deathYear || 'Не указан'}</p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-sm font-medium text-muted-foreground">Звание</span>
-            <p className="text-base">{hero.rank}</p>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-sm font-medium text-muted-foreground">Воинская часть</span>
-            <p className="text-base">{hero.unit}</p>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Icon name="MapPin" size={16} />
-              Населенный пункт
-            </span>
-            <p className="text-base">{hero.hometown}</p>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-sm font-medium text-muted-foreground">Регион</span>
-            <p className="text-base">{hero.region}</p>
-          </div>
-
-          {hero.awards.length > 0 && (
-            <div className="space-y-3">
-              <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Icon name="Medal" size={16} />
-                Награды
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {hero.awards.map((award, idx) => (
-                  <Badge 
-                    key={idx} 
-                    variant="secondary" 
-                    className="bg-secondary/20 text-secondary-foreground border border-secondary/30 text-sm px-3 py-1"
-                  >
-                    {award}
-                  </Badge>
-                ))}
+          {isEditing ? (
+            <>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-1 block">ФИО</label>
+                <Input
+                  value={editedHero.name}
+                  onChange={(e) => setEditedHero({ ...editedHero, name: e.target.value })}
+                  className="bg-background border-primary/30"
+                />
               </div>
-            </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground mb-1 block">Год рождения</label>
+                  <Input
+                    type="number"
+                    value={editedHero.birthYear}
+                    onChange={(e) => setEditedHero({ ...editedHero, birthYear: parseInt(e.target.value) })}
+                    className="bg-background border-primary/30"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground mb-1 block">Год смерти</label>
+                  <Input
+                    type="number"
+                    value={editedHero.deathYear || ''}
+                    onChange={(e) => setEditedHero({ ...editedHero, deathYear: e.target.value ? parseInt(e.target.value) : undefined })}
+                    className="bg-background border-primary/30"
+                    placeholder="Не указан"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-1 block">Звание</label>
+                <Input
+                  value={editedHero.rank}
+                  onChange={(e) => setEditedHero({ ...editedHero, rank: e.target.value })}
+                  className="bg-background border-primary/30"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-1 block">Воинская часть</label>
+                <Input
+                  value={editedHero.unit}
+                  onChange={(e) => setEditedHero({ ...editedHero, unit: e.target.value })}
+                  className="bg-background border-primary/30"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-1 block">Населенный пункт</label>
+                <Input
+                  value={editedHero.hometown}
+                  onChange={(e) => setEditedHero({ ...editedHero, hometown: e.target.value })}
+                  className="bg-background border-primary/30"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-1 block">Регион</label>
+                <Input
+                  value={editedHero.region}
+                  onChange={(e) => setEditedHero({ ...editedHero, region: e.target.value })}
+                  className="bg-background border-primary/30"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-1 block">Награды (каждая с новой строки)</label>
+                <Textarea
+                  value={editedHero.awards.join('\n')}
+                  onChange={(e) => handleAwardsChange(e.target.value)}
+                  className="bg-background border-primary/30 min-h-[100px]"
+                  placeholder="Орден Красной Звезды&#10;Медаль За отвагу"
+                />
+              </div>
+
+              {authToken && (
+                <FileUploadSection 
+                  heroId={hero.id} 
+                  authToken={authToken}
+                  onPhotoUploaded={loadHeroFiles}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm font-medium text-muted-foreground">Год рождения</span>
+                  <p className="text-lg font-semibold">{hero.birthYear}</p>
+                </div>
+                
+                <div className="space-y-1">
+                  <span className="text-sm font-medium text-muted-foreground">Год смерти</span>
+                  <p className="text-lg font-semibold">{hero.deathYear || 'Не указан'}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-muted-foreground">Звание</span>
+                <p className="text-base">{hero.rank}</p>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-muted-foreground">Воинская часть</span>
+                <p className="text-base">{hero.unit}</p>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Icon name="MapPin" size={16} />
+                  Населенный пункт
+                </span>
+                <p className="text-base">{hero.hometown}</p>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-muted-foreground">Регион</span>
+                <p className="text-base">{hero.region}</p>
+              </div>
+
+              {hero.awards.length > 0 && (
+                <div className="space-y-3">
+                  <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <Icon name="Medal" size={16} />
+                    Награды
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {hero.awards.map((award, idx) => (
+                      <Badge 
+                        key={idx} 
+                        variant="secondary" 
+                        className="bg-secondary/20 text-secondary-foreground border border-secondary/30 text-sm px-3 py-1"
+                      >
+                        {award}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {heroDocuments.length > 0 && (

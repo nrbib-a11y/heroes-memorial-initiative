@@ -171,6 +171,9 @@ const Index = () => {
           setShowHeroDetail(false);
           setSelectedHero(null);
         }}
+        isEditable={!!authToken}
+        authToken={authToken}
+        onUpdate={handleUpdateHero}
       />
     </div>
   );
